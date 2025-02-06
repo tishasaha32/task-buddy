@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import TaskTable from "./TaskTable"
+import AddDialog from "./AddDialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Search } from "lucide-react"
@@ -9,8 +11,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const List = () => {
+
+    const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
     return (
         <>
+            {openAddDialog && (<AddDialog openDialog={openAddDialog} setOpenDialog={setOpenAddDialog} />)}
             <div className="flex flex-col md:flex-row justify-between items-center gap-5">
                 <Button className="md:hidden block rounded-3xl">Add Task</Button>
                 <div className="flex items-center gap-3">
@@ -49,7 +54,7 @@ const List = () => {
                 </div>
                 <div className="flex items-center gap-3">
                     <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} />
-                    <Button className="hidden md:block rounded-3xl">Add Task</Button>
+                    <Button className="hidden md:block rounded-3xl" onClick={() => setOpenAddDialog(true)}>Add Task</Button>
                 </div>
             </div>
             <Separator className="mt-5 mb-1" />
