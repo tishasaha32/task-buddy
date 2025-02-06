@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import TaskTable from "./TaskTable"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Search } from "lucide-react"
@@ -10,7 +11,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 const List = () => {
     return (
         <>
-            <div className="flex justify-between items-center gap-5">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-5">
+                <Button className="md:hidden block rounded-3xl">Add Task</Button>
                 <div className="flex items-center gap-3">
                     <p className="text-gray-500 text-sm">Filter By: </p>
                     <Select>
@@ -47,10 +49,11 @@ const List = () => {
                 </div>
                 <div className="flex items-center gap-3">
                     <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} />
-                    <Button className="rounded-3xl">Add Task</Button>
+                    <Button className="hidden md:block rounded-3xl">Add Task</Button>
                 </div>
             </div>
-            <Separator className="my-5" />
+            <Separator className="mt-5 mb-1" />
+            <TaskTable />
         </>
     )
 }

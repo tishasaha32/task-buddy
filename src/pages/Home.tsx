@@ -1,5 +1,4 @@
-import List from "./List"
-import Board from "./Board"
+import { Board, List } from "@/components/app"
 import { AlignJustify, NotepadText, SquareKanban } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
@@ -11,11 +10,11 @@ const Home = () => {
             </h1>
             <Tabs defaultValue="list">
                 <TabsList>
-                    <TabsTrigger value="list" className="flex items-center gap-2"> <AlignJustify size={20} />List</TabsTrigger>
-                    <TabsTrigger value="board" className="flex items-center gap-2"> <SquareKanban size={20} />Board</TabsTrigger>
+                    <TabsTrigger value="list" className="hidden md:flex items-center gap-2"> <AlignJustify size={20} />List</TabsTrigger>
+                    <TabsTrigger value="board" className="hidden md:flex items-center gap-2"> <SquareKanban size={20} />Board</TabsTrigger>
                 </TabsList>
-                <TabsContent value="list"><List /></TabsContent>
-                <TabsContent value="board"><Board /></TabsContent>
+                <TabsContent value="list" ><List /></TabsContent>
+                <TabsContent value="board" className="hidden md:block"><Board /></TabsContent>
             </Tabs>
         </div>
     )
