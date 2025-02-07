@@ -46,7 +46,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
 
     return (
         <Dialog open={openDialog} onOpenChange={onOpenChange}>
-            <DialogContent className="flex flex-col items-start max-w-2xl p-0">
+            <DialogContent className="flex flex-col items-start max-w-xl p-0">
                 <DialogHeader>
                     <DialogTitle className="text-2xl p-6 pb-2 text-left">Create Task</DialogTitle>
                 </DialogHeader>
@@ -108,7 +108,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "w-[200px] justify-between",
+                                                        "w-[180px] justify-between",
                                                     )}
                                                 >
                                                     <span className="text-gray-500">DD/MM/YYYY</span>
@@ -134,7 +134,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                     <FormItem>
                                         <p className="text-gray-500 text-sm">Task Status <span>*</span></p>
                                         <Select>
-                                            <SelectTrigger className="w-[180px]">
+                                            <SelectTrigger className="w-[140px]">
                                                 <SelectValue placeholder="Choose" />
                                             </SelectTrigger>
                                             <SelectContent>

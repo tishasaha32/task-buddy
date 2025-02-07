@@ -1,4 +1,8 @@
 import { tasks } from "@/data";
+import NoTasks from "./NoTasks";
+import { useState } from "react";
+import TasksLists from "./TasksLists";
+import AddTaskInTable from "./AddTaskInTable";
 import {
     Table,
     TableBody,
@@ -7,10 +11,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import TasksLists from "./TasksLists";
-import NoTasks from "./NoTasks";
+import { ChevronUp } from "lucide-react";
 
 const TaskTable = () => {
+
+    const [showTodo, setShowTodo] = useState<boolean>(true);
+    const [showCompleted, setShowCompleted] = useState<boolean>(true);
+    const [showInProgress, setShowInProgress] = useState<boolean>(true);
+    const [addTaskClicked, setAddTaskClicked] = useState<boolean>(false);
+
     const todoTasks = tasks.filter((task) => task.status === "TODO");
     const inProgressTasks = tasks.filter((task) => task.status === "IN_PROGRESS");
     const completedTasks = tasks.filter((task) => task.status === "COMPLETED");
@@ -37,53 +46,63 @@ const TaskTable = () => {
 
             <TableBody className="bg-[#F1F1F1]">
                 {/* Todo Section */}
-                <TableRow>
+                <TableRow className="cursor-pointer" onClick={() => setShowTodo(!showTodo)}>
                     <TableCell
                         colSpan={6}
                         className="bg-[rgb(250,195,255)] font-semibold p-2 text-left rounded-t-md"
                     >
                         Todo ({todoTasks?.length})
+                        {showTodo ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
                     </TableCell>
                 </TableRow>
-                {todoTasks && todoTasks?.length > 0 ? (
+                <TableRow className="hidden sm:table-row">
+                    <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
+                </TableRow>
+                {addTaskClicked && (<AddTaskInTable setAddTaskClicked={setAddTaskClicked} />)}
+                {showTodo && todoTasks && todoTasks?.length > 0 && (
                     todoTasks.map((task) => (
                         <TasksLists key={task.uuid} task={task} />
                     ))
-                ) : (
+                )}
+                {!showTodo && todoTasks?.length === 0 && (
                     <NoTasks status="todo" />
                 )}
 
                 {/* In Progress Section */}
-                <TableRow>
+                <TableRow className="cursor-pointer" onClick={() => setShowInProgress(!showInProgress)}>
                     <TableCell
                         colSpan={6}
                         className="bg-[rgb(173,216,230)] font-semibold p-2 text-left rounded-t-md"
                     >
                         In Progress ({inProgressTasks?.length})
+                        {showInProgress ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
                     </TableCell>
                 </TableRow>
-                {inProgressTasks && inProgressTasks?.length > 0 ? (
+                {showInProgress && inProgressTasks && inProgressTasks?.length > 0 && (
                     inProgressTasks.map((task) => (
                         <TasksLists key={task.uuid} task={task} />
                     ))
-                ) : (
+                )}
+                {!showInProgress && inProgressTasks?.length === 0 && (
                     <NoTasks status="in progress" />
                 )}
 
                 {/* Completed Section */}
-                <TableRow>
+                <TableRow className="cursor-pointer" onClick={() => setShowCompleted(!showCompleted)}>
                     <TableCell
                         colSpan={6}
                         className="bg-[rgb(173,255,173)] font-semibold p-2 text-left rounded-t-md"
                     >
                         Completed ({completedTasks?.length})
+                        {showCompleted ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
                     </TableCell>
                 </TableRow>
-                {completedTasks && completedTasks?.length > 0 ? (
+                {showCompleted && completedTasks && completedTasks?.length > 0 && (
                     completedTasks.map((task) => (
                         <TasksLists key={task.uuid} task={task} />
                     ))
-                ) : (
+                )}
+                {!showCompleted && completedTasks?.length === 0 && (
                     <NoTasks status="completed" />
                 )}
             </TableBody>
