@@ -1,7 +1,7 @@
 import { z } from "zod";
-// import { useState } from "react";
-// import ReactQuill from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+import { useState } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +39,9 @@ const UpdateDialog = ({
     openDialog,
     setOpenDialog,
 }: UpdateDialogProps) => {
-    // const [value, setValue] = useState<string>('');
+    const [value, setValue] = useState<string>("");
+
+    console.log(value);
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
     };
@@ -79,7 +81,7 @@ const UpdateDialog = ({
                             className="flex flex-col w-full h-full"
                             onSubmit={form.handleSubmit((values) => onSubmit(values))}
                         >
-                            <div className="flex w-full h-full gap-2">
+                            <div className="flex w-full h-full">
                                 <ScrollArea className="h-80 w-2/3">
                                     <div className="flex w-full flex-col gap-3 px-6 py-0">
                                         <FormField
@@ -101,18 +103,18 @@ const UpdateDialog = ({
                                             name="description"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    {/* <ReactQuill theme="snow" value={value} onChange={setValue} /> */}
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Task Description"
-                                                        {...field}
+                                                    <ReactQuill
+                                                        theme="snow"
+                                                        value={field.value}
+                                                        onChange={setValue}
+                                                        className="h-40 rounded-md"
                                                     />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
                                     </div>
-                                    <div className="flex w-full justify-between mt-4 gap-2 px-6 py-0">
+                                    <div className="flex w-full justify-between mt-16 gap-2 px-6 py-0">
                                         <FormField
                                             control={form.control}
                                             name="status"
@@ -215,18 +217,18 @@ const UpdateDialog = ({
                                     </p>
                                     <Separator />
                                     <div className="flex flex-col gap-2 p-2 w-full">
-                                        <div className="text-gray-500 text-sm flex justify-between items-center">
+                                        <div className="text-gray-500 text-xs flex justify-between items-center">
                                             <p>You created this task</p>
                                             <p>{format(task?.createdAt, "PPP")}</p>
                                         </div>
                                         {task?.updatedAt && (
-                                            <div className="text-gray-500 text-sm flex justify-between items-center">
+                                            <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You updated this task</p>
                                                 <p>{format(task?.updatedAt, "PPP")}</p>
                                             </div>
                                         )}
                                         {task?.fileUpdatedAt && (
-                                            <div className="text-gray-500 text-sm flex justify-between items-center">
+                                            <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You uploaded file</p>
                                                 <p>{format(task?.fileUpdatedAt, "PPP")}</p>
                                             </div>

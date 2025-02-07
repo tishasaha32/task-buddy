@@ -13,6 +13,9 @@ import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
 interface AddDialogProps {
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
@@ -20,6 +23,10 @@ interface AddDialogProps {
 const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
 
     const [category, setCategory] = useState<string>("");
+    const [value, setValue] = useState('');
+
+    console.log(value);
+
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
     };
@@ -51,7 +58,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
     console.log(form?.getValues());
     return (
         <Dialog open={openDialog} onOpenChange={onOpenChange}>
-            <DialogContent className="flex flex-col items-start max-w-xl p-0">
+            <DialogContent className="flex flex-col items-start max-w-2xl p-0">
                 <DialogHeader>
                     <DialogTitle className="text-2xl p-6 pb-2 text-left">Create Task</DialogTitle>
                 </DialogHeader>
@@ -77,17 +84,13 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Input
-                                            type="text"
-                                            placeholder="Task Description"
-                                            {...field}
-                                        />
+                                        <ReactQuill theme="snow" value={field.value} onChange={setValue} className="h-32 rounded-md" />
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                        <div className="flex w-full justify-between gap-2 px-6 py-0">
+                        <div className="flex w-full justify-between mt-8 gap-2 px-6 py-0">
                             <FormField
                                 control={form.control}
                                 name="status"
