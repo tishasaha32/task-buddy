@@ -35,7 +35,7 @@ const TasksLists = ({ task }: TasksListProps) => {
             )}
             <TableRow key={task.uuid} className="hover:bg-gray-200 cursor-pointer">
                 <TableCell className="hidden sm:table-cell">
-                    <Checkbox />
+                    <Checkbox defaultChecked={task.status === "COMPLETED"} />
                 </TableCell>
                 <TableCell
                     className={

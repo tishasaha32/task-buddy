@@ -6,4 +6,7 @@ type Task = {
   dueDate: Date;
   status: "TODO" | "IN_PROGRESS" | "COMPLETED";
   attachments: File[];
+  createdAt: Date;
+  updatedAt?: Date;
+  fileUpdatedAt?: Date;
 };

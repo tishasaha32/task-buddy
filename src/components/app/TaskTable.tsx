@@ -67,6 +67,8 @@ const TaskTable = () => {
                 {!showTodo && todoTasks?.length === 0 && (
                     <NoTasks status="todo" />
                 )}
+                <TableRow className="hidden sm:table-row bg-background h-8">
+                </TableRow>
 
                 {/* In Progress Section */}
                 <TableRow className="cursor-pointer" onClick={() => setShowInProgress(!showInProgress)}>
@@ -86,6 +88,8 @@ const TaskTable = () => {
                 {!showInProgress && inProgressTasks?.length === 0 && (
                     <NoTasks status="in progress" />
                 )}
+                <TableRow className="hidden sm:table-row bg-background h-8">
+                </TableRow>
 
                 {/* Completed Section */}
                 <TableRow className="cursor-pointer" onClick={() => setShowCompleted(!showCompleted)}>
@@ -105,6 +109,8 @@ const TaskTable = () => {
                 {!showCompleted && completedTasks?.length === 0 && (
                     <NoTasks status="completed" />
                 )}
+                <TableRow className="hidden sm:table-row bg-background h-8">
+                </TableRow>
             </TableBody>
         </Table>
     );

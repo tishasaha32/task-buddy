@@ -1,4 +1,3 @@
-"use client";
 import { cn } from "@/lib/utils";
 import { File, X } from "lucide-react";
 import { forwardRef, useState } from "react";

@@ -1,25 +1,25 @@
 import { z } from "zod";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
-import { CalendarIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FileInput } from "@/components/ui/file-input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { FileInput } from "@/components/ui/file-input";
 
 interface AddDialogProps {
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
 const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
+
+    const [category, setCategory] = useState<string>("");
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
     };
@@ -27,7 +27,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
     const defaultValues: z.infer<typeof TaskSchema> = {
         title: "",
         description: "",
-        dueDate: new Date(),
+        dueDate: null,
         status: "",
         category: "",
         attachments: [],
@@ -44,6 +44,11 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
         console.log(values);
     };
 
+    const handleCategory = (category: string) => {
+        setCategory(category);
+        form.setValue("category", category);
+    }
+    console.log(form?.getValues());
     return (
         <Dialog open={openDialog} onOpenChange={onOpenChange}>
             <DialogContent className="flex flex-col items-start max-w-xl p-0">
@@ -90,8 +95,8 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                     <FormItem>
                                         <p className="text-gray-500 text-sm">Task Category <span>*</span></p>
                                         <div className="flex gap-2">
-                                            <Badge variant="outline" className="px-4 py-2">Personal</Badge>
-                                            <Badge variant="outline" className="px-4 py-2">Work</Badge>
+                                            <Badge variant={category === "Personal" ? "default" : "outline"} onClick={() => handleCategory("Personal")} className="px-4 py-2 cursor-pointer">Personal</Badge>
+                                            <Badge variant={category === "Work" ? "default" : "outline"} onClick={() => handleCategory("Work")} className="px-4 py-2 cursor-pointer">Work</Badge>
                                         </div>
                                         <FormMessage />
                                     </FormItem>
@@ -103,26 +108,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <p className="text-gray-500 text-sm">Due on <span>*</span></p>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[180px] justify-between",
-                                                    )}
-                                                >
-                                                    <span className="text-gray-500">DD/MM/YYYY</span>
-                                                    <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    initialFocus
-                                                    {...field}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
+                                        <DatePicker value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -130,10 +116,10 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                             <FormField
                                 control={form.control}
                                 name="status"
-                                render={() => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <p className="text-gray-500 text-sm">Task Status <span>*</span></p>
-                                        <Select>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger className="w-[140px]">
                                                 <SelectValue placeholder="Choose" />
                                             </SelectTrigger>
@@ -166,7 +152,7 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                             <Button onClick={() => setOpenDialog(false)} variant="outline" className="rounded-3xl">
                                 Cancel
                             </Button>
-                            <Button
+                            <Button disabled={form?.getValues().title === "" || form?.getValues().status === "" || form?.getValues().category === "" || form?.getValues().dueDate === null}
                                 onClick={() => form.handleSubmit((values) => onSubmit(values))()}
                                 className="rounded-3xl"
                             >

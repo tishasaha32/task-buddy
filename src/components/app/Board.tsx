@@ -1,4 +1,7 @@
+import { useState } from "react"
 import { cn } from "@/lib/utils"
+import AddDialog from "./AddDialog"
+import TaskBoard from "./TaskBoard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Search } from "lucide-react"
@@ -7,8 +10,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const Board = () => {
+    const [openDialog, setOpenDialog] = useState<boolean>(false);
+
     return (
         <>
+            {openDialog && (
+                <AddDialog
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                />
+            )}
             <div className="flex justify-between items-center gap-5">
                 <div className="flex items-center gap-3">
                     <p className="text-gray-500 text-sm">Filter By: </p>
@@ -46,9 +57,10 @@ const Board = () => {
                 </div>
                 <div className="flex items-center gap-3">
                     <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} />
-                    <Button className="rounded-3xl">Add Task</Button>
+                    <Button className="rounded-3xl" onClick={() => setOpenDialog(true)}>Add Task</Button>
                 </div>
             </div>
+            <TaskBoard />
         </>
     )
 }
