@@ -59,8 +59,8 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
                                     if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
                                     if (status === "COMPLETED") setShowCompleted(!showCompleted);
                                 }}>
-                                    <TableCell colSpan={6} className={`bg-${status === "TODO" ? "[rgb(250,195,255)]" : status === "IN_PROGRESS" ? "[rgb(173,216,230)]" : "[rgb(173,255,173)]"} font-semibold p-2 text-left rounded-t-md`}>
-                                        {status} ({taskList.length})
+                                    <TableCell colSpan={6} className={`bg-${status === "TODO" ? "[#FAC3FF]" : status === "IN_PROGRESS" ? "[#85D9F1]" : "[#A2D6A0]"} font-semibold p-2 text-left rounded-t-md`}>
+                                        {status.split("_").join(" ")} ({taskList.length})
                                         <ChevronUp size={16} className={`float-right transform ${((status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)) ? "" : "rotate-180"}`} />
                                     </TableCell>
                                 </TableRow>

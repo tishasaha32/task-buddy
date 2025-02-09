@@ -51,7 +51,7 @@ const TaskBoard = ({ tasks, searchTerm, selectedDate, category }: TaskBoardProps
             <div className="grid grid-cols-3 lg:grid-cols-4 gap-5 mt-5">
                 {Object.entries(groupedTasks).map(([status, tasks]) => (
                     <div key={status} className={tasks?.length === 0 ? "bg-[#F1F1F1] p-3 rounded-xl max-h-[6vh]" : "flex flex-col bg-[#F1F1F1] p-3 rounded-xl"}>
-                        <h1 className={status === "TODO" ? "px-2 rounded-md w-16 text-center text-sm mb-4 bg-[#FAC3FF]" : status === "IN_PROGRESS" ? "px-2 rounded-md w-28 mb-4 text-center text-sm bg-[#FFD6A5]" : "px-2 rounded-md w-24 text-center text-sm mb-4 bg-[#A2D6A0]"}>{status}</h1>
+                        <h1 className={status === "TODO" ? "px-2 rounded-md w-16 text-center text-sm mb-4 bg-[#FAC3FF]" : status === "IN_PROGRESS" ? "px-2 rounded-md w-28 mb-4 text-center text-sm bg-[#85D9F1]" : "px-2 rounded-md w-24 text-center text-sm mb-4 bg-[#A2D6A0]"}>{status.split("_").join(" ")}</h1>
                         <SortableContext items={tasks.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
                             {tasks?.map((task) => (
                                 <TaskCard task={task} key={task.uuid} />

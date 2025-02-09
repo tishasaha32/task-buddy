@@ -23,7 +23,7 @@ const Home = () => {
                         <TabsTrigger value="list" className="md:flex items-center gap-2"> <AlignJustify size={20} />List</TabsTrigger>
                         <TabsTrigger value="board" className="md:flex items-center gap-2"> <SquareKanban size={20} />Board</TabsTrigger>
                     </TabsList>
-                    <Button variant="outline" className="hidden md:flex items-center gap-2" onClick={() => handleSignOut()}><LogOut size={20} />Logout</Button>
+                    <Button variant="outline" className="hidden md:flex items-center gap-2 border rounded-xl border-[#ebd8e8]" onClick={() => handleSignOut()}><LogOut size={20} />Logout</Button>
                 </div>
                 <TabsContent value="list" ><List /></TabsContent>
                 <TabsContent value="board" className="hidden md:block"><Board /></TabsContent>
