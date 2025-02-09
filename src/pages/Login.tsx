@@ -19,9 +19,9 @@ const Login = () => {
                     <img src={LoginPage} />
                 </div>
             </div>
-            <div className="flex h-screen flex-col gap-5 justify-center items-center lg:hidden relative p-4">
-                <img src={Rings} className="absolute -top-20 -right-10" />
-                <img src={Rings} className="absolute top-28 -left-28" />
+            <div className="flex h-screen flex-col gap-5 justify-center items-center overflow-hidden lg:hidden relative p-4 bg-[#FFF9F9]">
+                <img src={Rings} className="absolute -top-16 -right-16" />
+                <img src={Rings} className="absolute top-32 -left-24" />
                 <h1 className="text-2xl flex justify-center items-center gap-2 text-primary font-bold"><NotepadText size={30} />TaskBuddy</h1>
                 <p className="text-center font-semibold text-sm">Streamline your workflow and track progress effortlessly with our all-in-one task management app.</p>
                 <Button className="bg-black text-white rounded-xl hover:bg-black/80" >
