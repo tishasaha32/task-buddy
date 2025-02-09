@@ -16,11 +16,11 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-interface AddDialogProps {
+interface AddTaskDialogProps {
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
-const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
+const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
 
     const [category, setCategory] = useState<string>("");
     const [value, setValue] = useState('');
@@ -84,13 +84,13 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <ReactQuill theme="snow" value={field.value} onChange={setValue} className="h-32 rounded-md" />
+                                        <ReactQuill theme="snow" value={field.value} onChange={setValue} />
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                        <div className="flex w-full justify-between mt-8 gap-2 px-6 py-0">
+                        <div className="flex flex-row w-full justify-between gap-2 px-6 py-0">
                             <FormField
                                 control={form.control}
                                 name="status"
@@ -150,7 +150,6 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
                                 )}
                             />
                         </div>
-                        {/* <Separator className="" /> */}
                         <DialogFooter className="flex bg-[#F1F1F1] justify-end gap-2 p-4 border-t-2 border-[#d2d2d2] w-full">
                             <Button onClick={() => setOpenDialog(false)} variant="outline" className="rounded-3xl">
                                 Cancel
@@ -169,4 +168,4 @@ const AddDialog = ({ openDialog, setOpenDialog }: AddDialogProps) => {
     );
 };
 
-export default AddDialog;
+export default AddTaskDialog;

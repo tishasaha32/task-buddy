@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import AddDialog from "./AddDialog"
+import AddDialog from "./AddTaskDialog"
 import TaskBoard from "./TaskBoard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"

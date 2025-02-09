@@ -1,37 +1,27 @@
 import { useState } from "react";
-import UpdateDialog from "./UpdateDialog";
+import { CSS } from "@dnd-kit/utilities";
 import DeleteDialog from "./DeleteDialog";
+import { useSortable } from "@dnd-kit/sortable";
+import UpdateTaskDialog from "./UpdateTaskDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
-import {
-    Ellipsis,
-    CircleCheck,
-    Edit,
-    Trash2,
-    GripVertical,
-} from "lucide-react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import UpdateTaskDrawerMobile from "./UpdateTaskDrawerMobile";
+import { Ellipsis, CircleCheck, Edit, Trash2, GripVertical } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type TasksListProps = {
     task: Task;
 };
 const TasksLists = ({ task }: TasksListProps) => {
-    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [disableDrag, setDisableDrag] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [disableDrag, setDisableDrag] = useState(false); // Track drag state
+    const [openUpdateTaskDialog, setOpenUpdateTaskDialog] = useState(false);
+    const [openUpdateTaskDrawerMobile, setOpenUpdateTaskDrawerMobile] = useState(false);
 
-    // Make the task draggable
     const { attributes, listeners, setNodeRef, transform, transition } =
         useSortable({
             id: task.uuid,
-            disabled: disableDrag, // Disable drag dynamically
+            disabled: disableDrag,
         });
 
     const style = {
@@ -41,11 +31,11 @@ const TasksLists = ({ task }: TasksListProps) => {
 
     return (
         <>
-            {openEditDialog && (
-                <UpdateDialog
+            {openUpdateTaskDialog && (
+                <UpdateTaskDialog
                     task={task}
-                    openDialog={openEditDialog}
-                    setOpenDialog={setOpenEditDialog}
+                    openDialog={openUpdateTaskDialog}
+                    setOpenDialog={setOpenUpdateTaskDialog}
                 />
             )}
             {openDeleteDialog && (
@@ -53,6 +43,13 @@ const TasksLists = ({ task }: TasksListProps) => {
                     task={task}
                     openDialog={openDeleteDialog}
                     setOpenDialog={setOpenDeleteDialog}
+                />
+            )}
+            {openUpdateTaskDrawerMobile && (
+                <UpdateTaskDrawerMobile
+                    task={task}
+                    openDialog={openUpdateTaskDrawerMobile}
+                    setOpenDialog={setOpenUpdateTaskDrawerMobile}
                 />
             )}
             <TableRow
@@ -63,7 +60,6 @@ const TasksLists = ({ task }: TasksListProps) => {
                 className="hover:bg-gray-200 cursor-pointer"
             >
                 <TableCell
-                    className="hidden sm:table-cell"
                     onMouseEnter={() => setDisableDrag(true)}
                     onMouseLeave={() => setDisableDrag(false)}
                 >
@@ -94,15 +90,17 @@ const TasksLists = ({ task }: TasksListProps) => {
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.status}</TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.category}</TableCell>
-                <TableCell className="sm:table-cell hidden">
+                <TableCell className="hidden">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Ellipsis size={16} />
+                            <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />
                         </PopoverTrigger>
                         <PopoverContent className="w-32 flex flex-col gap-2 p-4 cursor-pointer">
                             <div
                                 className="flex items-center gap-2 font-bold"
-                                onClick={() => setOpenEditDialog(true)}
+                                onClick={() => setOpenUpdateTaskDialog(true)}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
                             >
                                 <Edit size={16} />
                                 Edit
@@ -110,6 +108,35 @@ const TasksLists = ({ task }: TasksListProps) => {
                             <div
                                 className="flex items-center gap-2 text-destructive font-bold"
                                 onClick={() => setOpenDeleteDialog(true)}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
+                            >
+                                <Trash2 size={16} />
+                                Delete
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </TableCell>
+                <TableCell className="md:table-cell">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-32 flex flex-col gap-2 p-4 cursor-pointer">
+                            <div
+                                className="flex items-center gap-2 font-bold"
+                                onClick={() => setOpenUpdateTaskDrawerMobile(true)}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
+                            >
+                                <Edit size={16} />
+                                Edit
+                            </div>
+                            <div
+                                className="flex items-center gap-2 text-destructive font-bold"
+                                onClick={() => setOpenDeleteDialog(true)}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
                             >
                                 <Trash2 size={16} />
                                 Delete

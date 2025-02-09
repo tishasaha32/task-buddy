@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { useState } from "react";
+import { format } from "date-fns";
 import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
+import { useEffect, useState } from "react";
+import "react-quill-new/dist/quill.snow.css";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
@@ -11,35 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
-interface UpdateDialogProps {
+interface UpdateTaskDrawerMobileProps {
     task: Task;
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
-const UpdateDialog = ({
-    task,
-    openDialog,
-    setOpenDialog,
-}: UpdateDialogProps) => {
+const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskDrawerMobileProps) => {
     const [value, setValue] = useState<string>("");
+    useEffect(() => {
+        setValue(task?.description || "");
+    }, [task]);
 
     console.log(value);
     const onOpenChange = (open: boolean) => {
@@ -61,39 +49,38 @@ const UpdateDialog = ({
         resolver: zodResolver(TaskSchema),
     });
 
-    // Submit the form data and set it in local storage
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
         console.log(values);
     };
 
     return (
-        <Dialog open={openDialog} onOpenChange={onOpenChange}>
-            <DialogContent className="flex flex-col items-start max-w-5xl p-0">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl p-6 pb-2 text-left">
+        <Drawer open={openDialog} onOpenChange={onOpenChange}>
+            <DrawerContent className="flex flex-col items-start max-w-5xl p-0">
+                <DrawerHeader>
+                    <DrawerTitle className="text-2xl text-left">
                         Update Task
-                    </DialogTitle>
-                </DialogHeader>
+                    </DrawerTitle>
+                </DrawerHeader>
                 <Separator />
-                <div className="flex justify-center w-full">
-                    <Form {...form}>
-                        <form
-                            className="flex flex-col w-full h-full"
-                            onSubmit={form.handleSubmit((values) => onSubmit(values))}
-                        >
-                            <div className="flex w-full h-full">
-                                <ScrollArea className="h-80 w-2/3">
-                                    <div className="flex w-full flex-col gap-3 px-6 py-0">
+                <Tabs defaultValue="details">
+                    <TabsList className="flex gap-2 w-full">
+                        <TabsTrigger value="details" className="w-1/2 border border-border rounded-3xl">Details</TabsTrigger>
+                        <TabsTrigger value="activity" className="w-1/2 border border-border rounded-3xl">Activity</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="details" >
+                        <Form {...form}>
+                            <form
+                                className="flex w-full flex-col items-center gap-5"
+                                onSubmit={form.handleSubmit((values) => onSubmit(values))}
+                            >
+                                <ScrollArea className="h-[60vh]">
+                                    <div className="flex w-full mt-4 flex-col gap-3 px-6 py-0">
                                         <FormField
                                             control={form.control}
                                             name="title"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Task Title"
-                                                        {...field}
-                                                    />
+                                                    <Input type="text" placeholder="Task Title" {...field} />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -103,18 +90,13 @@ const UpdateDialog = ({
                                             name="description"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <ReactQuill
-                                                        theme="snow"
-                                                        value={field.value}
-                                                        onChange={setValue}
-                                                        className="h-40 rounded-md"
-                                                    />
+                                                    <ReactQuill theme="snow" value={field.value} onChange={setValue} />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
                                     </div>
-                                    <div className="flex w-full justify-between mt-16 gap-2 px-6 py-0">
+                                    <div className="flex flex-col w-full justify-between mt-4 gap-4 px-6 py-0">
                                         <FormField
                                             control={form.control}
                                             name="status"
@@ -154,15 +136,8 @@ const UpdateDialog = ({
                                             name="dueDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <p className="text-gray-500 text-sm">
-                                                        Due on <span>*</span>
-                                                    </p>
-                                                    <DatePicker
-                                                        value={task?.dueDate || null}
-                                                        onChange={field.onChange}
-                                                        placeholder="Select a date"
-                                                        className="w-[200px]"
-                                                    />
+                                                    <p className="text-gray-500 text-sm">Due on <span>*</span></p>
+                                                    <DatePicker value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -172,24 +147,15 @@ const UpdateDialog = ({
                                             name="status"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <p className="text-gray-500 text-sm">
-                                                        Task Status <span>*</span>
-                                                    </p>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value}
-                                                    >
-                                                        <SelectTrigger className="w-[200px]">
+                                                    <p className="text-gray-500 text-sm">Task Status <span>*</span></p>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger className="w-[140px]">
                                                             <SelectValue placeholder="Choose" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="TODO">TODO</SelectItem>
-                                                            <SelectItem value="IN_PROGRESS">
-                                                                IN PROGRESS
-                                                            </SelectItem>
-                                                            <SelectItem value="COMPLETED">
-                                                                COMPLETED
-                                                            </SelectItem>
+                                                            <SelectItem value="IN_PROGRESS">IN PROGRESS</SelectItem>
+                                                            <SelectItem value="COMPLETED">COMPLETED</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage />
@@ -197,7 +163,7 @@ const UpdateDialog = ({
                                             )}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-1 gap-3 w-full mb-20 px-6 py-0">
+                                    <div className="grid grid-cols-1 gap-3 mt-4 w-full px-6 py-0">
                                         <FormField
                                             control={form.control}
                                             name="attachments"
@@ -211,54 +177,46 @@ const UpdateDialog = ({
                                         />
                                     </div>
                                 </ScrollArea>
-                                <div className="w-1/3 bg-[#F1F1F1]">
-                                    <p className="font-bold text-lg p-2 pt-0 text-left bg-background">
-                                        Activity
-                                    </p>
-                                    <Separator />
-                                    <div className="flex flex-col gap-2 p-2 w-full">
-                                        <div className="text-gray-500 text-xs flex justify-between items-center">
-                                            <p>You created this task</p>
-                                            <p>{format(task?.createdAt, "PPP")}</p>
-                                        </div>
-                                        {task?.updatedAt && (
-                                            <div className="text-gray-500 text-xs flex justify-between items-center">
-                                                <p>You updated this task</p>
-                                                <p>{format(task?.updatedAt, "PPP")}</p>
-                                            </div>
-                                        )}
-                                        {task?.fileUpdatedAt && (
-                                            <div className="text-gray-500 text-xs flex justify-between items-center">
-                                                <p>You uploaded file</p>
-                                                <p>{format(task?.fileUpdatedAt, "PPP")}</p>
-                                            </div>
-                                        )}
-                                    </div>
+                                <DrawerFooter className="flex bg-[#F1F1F1] justify-end gap-2 p-4 border-t-2 border-[#d2d2d2] w-full">
+                                    <Button onClick={() => setOpenDialog(false)} variant="outline" className="rounded-3xl">
+                                        Cancel
+                                    </Button>
+                                    <Button disabled={form?.getValues().title === "" || form?.getValues().status === "" || form?.getValues().category === "" || form?.getValues().dueDate === null}
+                                        onClick={() => form.handleSubmit((values) => onSubmit(values))()}
+                                        className="rounded-3xl"
+                                    >
+                                        Create
+                                    </Button>
+                                </DrawerFooter>
+                            </form>
+                        </Form>
+                    </TabsContent>
+                    <TabsContent value="activity">
+                        <ScrollArea className="h-[75vh]">
+                            <div className="flex flex-col gap-2 p-2 w-screen">
+                                <div className="text-sm flex justify-between items-center">
+                                    <p>You created this task</p>
+                                    <p className="text-gray-500">{format(task?.createdAt, "PPP")}</p>
                                 </div>
+                                {task?.updatedAt && (
+                                    <div className="text-sm flex justify-between items-center">
+                                        <p>You updated this task</p>
+                                        <p className="text-gray-500">{format(task?.updatedAt, "PPP")}</p>
+                                    </div>
+                                )}
+                                {task?.fileUpdatedAt && (
+                                    <div className="text-sm flex justify-between items-center">
+                                        <p>You uploaded file</p>
+                                        <p className="text-gray-500">{format(task?.fileUpdatedAt, "PPP")}</p>
+                                    </div>
+                                )}
                             </div>
-                            <DialogFooter className="flex bg-[#F1F1F1] justify-end gap-2 p-4 border-t-2 border-[#d2d2d2] w-full">
-                                <Button
-                                    onClick={() => setOpenDialog(false)}
-                                    variant="outline"
-                                    className="rounded-3xl"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={() =>
-                                        form.handleSubmit((values) => onSubmit(values))()
-                                    }
-                                    className="rounded-3xl"
-                                >
-                                    Update
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </div>
-            </DialogContent>
-        </Dialog>
+                        </ScrollArea>
+                    </TabsContent>
+                </Tabs>
+            </DrawerContent>
+        </Drawer>
     );
 };
 
-export default UpdateDialog;
+export default UpdateTaskDrawerMobile;

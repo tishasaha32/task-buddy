@@ -51,50 +51,56 @@ const TaskTable = () => {
 
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
-            <Table className="w-full">
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="hidden sm:table-cell"></TableHead>
-                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Title</TableHead>
-                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">DueOn</TableHead>
-                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Status</TableHead>
-                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Category</TableHead>
-                        <TableHead className="sm:table-cell hidden"></TableHead>
-                    </TableRow>
-                </TableHeader>
+            <div className="p-4 pt-0 md:p-0">
+                <Table className="w-full">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="hidden sm:table-cell"></TableHead>
+                            <TableHead className="hidden sm:table-cell text-bold text-gray-600">Title</TableHead>
+                            <TableHead className="hidden sm:table-cell text-bold text-gray-600">DueOn</TableHead>
+                            <TableHead className="hidden sm:table-cell text-bold text-gray-600">Status</TableHead>
+                            <TableHead className="hidden sm:table-cell text-bold text-gray-600">Category</TableHead>
+                            <TableHead className="sm:table-cell hidden"></TableHead>
+                        </TableRow>
+                    </TableHeader>
 
-                <TableBody className="bg-[#F1F1F1]">
-                    {Object.entries(groupedTasks).map(([status, taskList]) => (
-                        <>
-                            <TableRow key={status} className="cursor-pointer" onClick={() => {
-                                if (status === "TODO") setShowTodo(!showTodo);
-                                if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
-                                if (status === "COMPLETED") setShowCompleted(!showCompleted);
-                            }}>
-                                <TableCell colSpan={6} className={`bg-${status === "TODO" ? "[rgb(250,195,255)]" : status === "IN_PROGRESS" ? "[rgb(173,216,230)]" : "[rgb(173,255,173)]"} font-semibold p-2 text-left rounded-t-md`}>
-                                    {status} ({taskList.length})
-                                    <ChevronUp size={16} className={`float-right transform ${((status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)) ? "" : "rotate-180"}`} />
-                                </TableCell>
-                            </TableRow>
+                    <TableBody className="bg-[#F1F1F1]">
+                        {Object.entries(groupedTasks).map(([status, taskList]) => (
+                            <>
+                                <TableRow key={status} className="cursor-pointer" onClick={() => {
+                                    if (status === "TODO") setShowTodo(!showTodo);
+                                    if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
+                                    if (status === "COMPLETED") setShowCompleted(!showCompleted);
+                                }}>
+                                    <TableCell colSpan={6} className={`bg-${status === "TODO" ? "[rgb(250,195,255)]" : status === "IN_PROGRESS" ? "[rgb(173,216,230)]" : "[rgb(173,255,173)]"} font-semibold p-2 text-left rounded-t-md`}>
+                                        {status} ({taskList.length})
+                                        <ChevronUp size={16} className={`float-right transform ${((status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)) ? "" : "rotate-180"}`} />
+                                    </TableCell>
+                                </TableRow>
 
-                            <TableRow className="hidden sm:table-row">
-                                <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
-                            </TableRow>
-                            {addTaskClicked && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
+                                <TableRow className="hidden sm:table-row">
+                                    <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
+                                </TableRow>
+                                {addTaskClicked && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
 
-                            <SortableContext items={taskList.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
-                                {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
-                                    ? taskList.map((task) => (
-                                        <TasksLists key={task.uuid} task={task} />
-                                    ))
-                                    : null}
-                            </SortableContext>
+                                <SortableContext items={taskList.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
+                                    {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
+                                        ? taskList.map((task) => (
+                                            <TasksLists key={task.uuid} task={task} />
+                                        ))
+                                        : null}
+                                </SortableContext>
 
-                            {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
-                        </>
-                    ))}
-                </TableBody>
-            </Table>
+                                <TableRow className="bg-background">
+                                    <TableCell colSpan={6}> </TableCell>
+                                </TableRow>
+
+                                {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
+                            </>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </DndContext>
     );
 };

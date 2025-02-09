@@ -4,14 +4,16 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 const Home = () => {
     return (
-        <div className="m-10 flex flex-col gap-5">
-            <h1 className="text-2xl font-semibold flex items-center gap-2">
-                <NotepadText size={30} />TaskBuddy
-            </h1>
+        <div className="md:m-10 flex flex-col gap-2 md:gap-5">
+            <div className="flex md:bg-background p-4 md:p-0 bg-[#FAEEFC]">
+                <h1 className="text-2xl font-semibold flex items-center gap-2">
+                    <NotepadText size={30} className="hidden md:block" />TaskBuddy
+                </h1>
+            </div>
             <Tabs defaultValue="list">
-                <TabsList>
-                    <TabsTrigger value="list" className="hidden md:flex items-center gap-2"> <AlignJustify size={20} />List</TabsTrigger>
-                    <TabsTrigger value="board" className="hidden md:flex items-center gap-2"> <SquareKanban size={20} />Board</TabsTrigger>
+                <TabsList className="hidden md:flex justify-start">
+                    <TabsTrigger value="list" className="md:flex items-center gap-2"> <AlignJustify size={20} />List</TabsTrigger>
+                    <TabsTrigger value="board" className="md:flex items-center gap-2"> <SquareKanban size={20} />Board</TabsTrigger>
                 </TabsList>
                 <TabsContent value="list" ><List /></TabsContent>
                 <TabsContent value="board" className="hidden md:block"><Board /></TabsContent>

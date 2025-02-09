@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
-import UpdateDialog from "./UpdateDialog";
+import UpdateDialog from "./UpdateTaskDialog";
 import DeleteDialog from "./DeleteDialog";
 import { useSortable } from "@dnd-kit/sortable";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
