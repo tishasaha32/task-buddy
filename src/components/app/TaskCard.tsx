@@ -52,7 +52,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
                 className="m-1 min-h-[14vh] flex flex-col justify-between cursor-grab"
                 key={task.uuid}
                 {...attributes}
-                {...(disableDrag ? {} : listeners)} // Disable listeners if disableDrag is true
+                {...(disableDrag ? {} : listeners)}
             >
                 <CardHeader className="p-2">
                     <div className="flex items-center justify-between w-full">

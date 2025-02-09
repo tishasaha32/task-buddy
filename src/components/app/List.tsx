@@ -1,15 +1,13 @@
 import { tasks } from "@/data";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import TaskTable from "./TaskTable";
 import AddTaskDialog from "./AddTaskDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Search } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Separator } from "@/components/ui/separator";
 import AddTaskDrawerMobile from "./AddTaskDrawerMobile";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const List = () => {
@@ -17,8 +15,17 @@ const List = () => {
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);
     const [openAddTaskDrawerMobile, setOpenAddTaskDrawerMobile] = useState<boolean>(false);
 
+    const handleDateSelect = (date: Date | undefined) => {
+        const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
+        setTasksData(tasksFiltered);
+    }
     const handleCategorySelect = (category: string) => {
         const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
+        setTasksData(tasksFiltered);
+    }
+
+    const handleSearch = (searchTerm: string) => {
+        const tasksFiltered = tasks.filter((task) => task?.title?.toLowerCase().includes(searchTerm.toLowerCase()));
         setTasksData(tasksFiltered);
     }
 
@@ -54,21 +61,7 @@ const List = () => {
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn("w-28 rounded-3xl text-gray-500")}
-                                >
-                                    <span>Due Date</span>
-                                    <ChevronDown size={20} />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" initialFocus />
-                            </PopoverContent>
-                        </Popover>
+                        <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -76,6 +69,7 @@ const List = () => {
                         placeholder="Search"
                         className="md:w-[250px] rounded-3xl"
                         startContent={<Search size={20} />}
+                        onChange={(e) => handleSearch(e.target.value)}
                     />
                     <Button
                         className="hidden md:block rounded-3xl"

@@ -25,7 +25,6 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
         setTasksData((prevTasks) => {
             const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
             const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
-
             return arrayMove(prevTasks, oldIndex, newIndex);
         });
     };
@@ -52,7 +51,6 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
                             <TableHead className="sm:table-cell hidden"></TableHead>
                         </TableRow>
                     </TableHeader>
-
                     <TableBody className="bg-[#F1F1F1]">
                         {Object.entries(groupedTasks).map(([status, taskList]) => (
                             <React.Fragment key={status}>
@@ -66,12 +64,12 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
                                         <ChevronUp size={16} className={`float-right transform ${((status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)) ? "" : "rotate-180"}`} />
                                     </TableCell>
                                 </TableRow>
-
-                                <TableRow className="hidden sm:table-row">
-                                    <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
-                                </TableRow>
-                                {addTaskClicked && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
-
+                                {status === "TODO" &&
+                                    <TableRow className="hidden sm:table-row">
+                                        <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
+                                    </TableRow>
+                                }
+                                {addTaskClicked && status === "TODO" && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
                                 <SortableContext items={taskList.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
                                     {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
                                         ? taskList.map((task) => (
@@ -79,12 +77,10 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
                                         ))
                                         : null}
                                 </SortableContext>
-
+                                {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
                                 <TableRow className="bg-background">
                                     <TableCell colSpan={6}> </TableCell>
                                 </TableRow>
-
-                                {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
                             </React.Fragment>
                         ))}
                     </TableBody>

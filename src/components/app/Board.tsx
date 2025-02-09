@@ -10,11 +10,25 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 
 const Board = () => {
     const [tasksData, setTasksData] = useState(tasks);
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
+
     const handleCategorySelect = (category: string) => {
         const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
         setTasksData(tasksFiltered);
     }
+
+    const handleDateSelect = (date: Date | undefined) => {
+        const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
+        setTasksData(tasksFiltered);
+    }
+
+    const handleSearch = (searchTerm: string) => {
+        setSearchTerm(searchTerm);
+        const tasksFiltered = tasks.filter((task) => task?.title?.toLowerCase().includes(searchTerm.toLowerCase()));
+        setTasksData(tasksFiltered);
+    }
+
     return (
         <>
             {openDialog && (
@@ -37,14 +51,14 @@ const Board = () => {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => console.log(date)} />
+                    <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
                 </div>
                 <div className="flex items-center gap-3">
-                    <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} />
+                    <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} onChange={(e) => handleSearch(e.target.value)} />
                     <Button className="rounded-3xl" onClick={() => setOpenDialog(true)}>Add Task</Button>
                 </div>
             </div>
-            <TaskBoard tasks={tasksData} />
+            <TaskBoard tasks={tasksData} searchTerm={searchTerm} />
         </>
     )
 }

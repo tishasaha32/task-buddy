@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
 import TaskCard from "./TaskCard";
+import { useEffect, useState } from "react";
+import SearchNotFound from "@/assets/SearchNotFound.png"
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-
-const TaskBoard = ({ tasks }: { tasks: Task[] }) => {
+type TaskBoardProps = {
+    tasks: Task[];
+    searchTerm: string
+}
+const TaskBoard = ({ tasks, searchTerm }: TaskBoardProps) => {
     const [tasksData, setTasksData] = useState(tasks);
 
     useEffect(() => {
@@ -29,14 +33,25 @@ const TaskBoard = ({ tasks }: { tasks: Task[] }) => {
         });
     };
 
+    if (tasksData.length === 0 && searchTerm) {
+        return (
+            <div className="flex flex-col gap-3 justify-center h-[60vh] items-center">
+                <img src={SearchNotFound} alt="empty" width={250} height={250} className="opacity-50" />
+                <h1 className="font-semibold text-lg text-center">It looks like we can't find any results <br />that match.</h1>
+            </div>
+        )
+    }
+
+    Object.entries(groupedTasks).map(([status, tasks]) => console.log("Status:", status, "Tasks:", tasks));
+
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-3 lg:grid-cols-4 gap-5 mt-5">
                 {Object.entries(groupedTasks).map(([status, tasks]) => (
-                    <div key={status} className="flex flex-col bg-[#F1F1F1] min-h-[70vh] p-2 rounded-3xl">
-                        <h1 className={status === "TODO" ? "px-2 rounded-2xl w-16 text-center text-sm mb-4 bg-[#FAC3FF]" : status === "IN_PROGRESS" ? "px-2 rounded-2xl w-28 mb-4 text-center text-sm bg-[#FFD6A5]" : "px-2 rounded-2xl w-24 text-center text-sm mb-4 bg-[#A2D6A0]"}>{status}</h1>
+                    <div key={status} className={tasks?.length === 0 ? "bg-[#F1F1F1] p-3 rounded-xl max-h-[6vh]" : "flex flex-col bg-[#F1F1F1] p-3 rounded-xl"}>
+                        <h1 className={status === "TODO" ? "px-2 rounded-md w-16 text-center text-sm mb-4 bg-[#FAC3FF]" : status === "IN_PROGRESS" ? "px-2 rounded-md w-28 mb-4 text-center text-sm bg-[#FFD6A5]" : "px-2 rounded-md w-24 text-center text-sm mb-4 bg-[#A2D6A0]"}>{status}</h1>
                         <SortableContext items={tasks.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
-                            {tasks.map((task) => (
+                            {tasks?.map((task) => (
                                 <TaskCard task={task} key={task.uuid} />
                             ))}
                         </SortableContext>
