@@ -5,9 +5,11 @@ import { DndContext, closestCorners } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 type TaskBoardProps = {
     tasks: Task[];
-    searchTerm: string
+    searchTerm: string,
+    selectedDate: Date | undefined,
+    category: string
 }
-const TaskBoard = ({ tasks, searchTerm }: TaskBoardProps) => {
+const TaskBoard = ({ tasks, searchTerm, selectedDate, category }: TaskBoardProps) => {
     const [tasksData, setTasksData] = useState(tasks);
 
     useEffect(() => {
@@ -33,7 +35,7 @@ const TaskBoard = ({ tasks, searchTerm }: TaskBoardProps) => {
         });
     };
 
-    if (tasksData.length === 0 && searchTerm) {
+    if (tasksData.length === 0 && (searchTerm || selectedDate || category)) {
         return (
             <div className="flex flex-col gap-3 justify-center h-[60vh] items-center">
                 <img src={SearchNotFound} alt="empty" width={250} height={250} className="opacity-50" />

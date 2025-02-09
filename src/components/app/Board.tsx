@@ -12,13 +12,17 @@ const Board = () => {
     const [tasksData, setTasksData] = useState(tasks);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
+    const [category, setCategory] = useState<string>("");
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
     const handleCategorySelect = (category: string) => {
+        setCategory(category);
         const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
         setTasksData(tasksFiltered);
     }
 
     const handleDateSelect = (date: Date | undefined) => {
+        setSelectedDate(date);
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
         setTasksData(tasksFiltered);
     }
@@ -58,7 +62,7 @@ const Board = () => {
                     <Button className="rounded-3xl" onClick={() => setOpenDialog(true)}>Add Task</Button>
                 </div>
             </div>
-            <TaskBoard tasks={tasksData} searchTerm={searchTerm} />
+            <TaskBoard tasks={tasksData} searchTerm={searchTerm} selectedDate={selectedDate} category={category} />
         </>
     )
 }
