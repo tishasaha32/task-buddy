@@ -70,7 +70,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                             onSubmit={form.handleSubmit((values) => onSubmit(values))}
                         >
                             <div className="flex w-full h-full">
-                                <ScrollArea className="h-80 w-2/3">
+                                <ScrollArea className="h-88 w-2/3">
                                     <div className="flex w-full flex-col gap-3 px-6 py-0">
                                         <FormField
                                             control={form.control}
@@ -91,11 +91,14 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                             name="description"
                                             render={() => (
                                                 <FormItem>
-                                                    <ReactQuill
-                                                        theme="snow"
-                                                        value={value}
-                                                        onChange={setValue}
-                                                    />
+                                                    <div className="h-40">
+                                                        <ReactQuill
+                                                            theme="snow"
+                                                            value={value}
+                                                            onChange={setValue}
+                                                            className="h-28"
+                                                        />
+                                                    </div>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
