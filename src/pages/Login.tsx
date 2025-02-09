@@ -4,12 +4,16 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import LoginPage from "../assets/LoginPage.png"
 import GoogleLogo from "../assets/GoogleLogo.png"
+import { signInWithGoogle } from "@/lib/googleLogin";
 
 const Login = () => {
     const navigate = useNavigate();
+
     const handleSignIn = async () => {
         try {
-            navigate("/");
+            const user = await signInWithGoogle(); // Call the Google sign-in function
+            console.log("User signed in:", user);
+            navigate("/"); // Navigate to home after successful sign-in
         } catch (error) {
             console.error("Sign-in failed:", error);
         }
