@@ -1,6 +1,6 @@
-import { tasks } from "@/data";
-import NoTasks from "./NoTasks";
 import { useState } from "react";
+import { tasks as initialTasks } from "@/data";
+import NoTasks from "./NoTasks";
 import TasksLists from "./TasksLists";
 import AddTaskInTable from "./AddTaskInTable";
 import {
@@ -13,106 +13,89 @@ import {
 } from "@/components/ui/table";
 import { ChevronUp } from "lucide-react";
 
+import {
+    DndContext,
+    closestCorners,
+    DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    SortableContext,
+    arrayMove,
+    verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+
 const TaskTable = () => {
+    const [tasks, setTasks] = useState(initialTasks);
+    const [showTodo, setShowTodo] = useState(true);
+    const [showCompleted, setShowCompleted] = useState(true);
+    const [showInProgress, setShowInProgress] = useState(true);
+    const [addTaskClicked, setAddTaskClicked] = useState(false);
 
-    const [showTodo, setShowTodo] = useState<boolean>(true);
-    const [showCompleted, setShowCompleted] = useState<boolean>(true);
-    const [showInProgress, setShowInProgress] = useState<boolean>(true);
-    const [addTaskClicked, setAddTaskClicked] = useState<boolean>(false);
+    const updateTaskOrder = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over) return;
 
-    const todoTasks = tasks.filter((task) => task.status === "TODO");
-    const inProgressTasks = tasks.filter((task) => task.status === "IN_PROGRESS");
-    const completedTasks = tasks.filter((task) => task.status === "COMPLETED");
+        setTasks((prevTasks) => {
+            const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
+            const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
+
+            return arrayMove(prevTasks, oldIndex, newIndex);
+        });
+    };
+
+    const groupedTasks = {
+        TODO: tasks.filter((task) => task.status === "TODO"),
+        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
+        COMPLETED: tasks.filter((task) => task.status === "COMPLETED"),
+    };
 
     return (
-        <Table className="w-full">
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="hidden sm:table-cell"></TableHead>
-                    <TableHead className="hidden sm:table-cell text-bold text-gray-600">Title</TableHead>
-                    <TableHead className="hidden sm:table-cell text-bold text-gray-600">
-                        DueOn
-                    </TableHead>
-                    <TableHead className="hidden sm:table-cell text-bold text-gray-600">
-                        Status
-                    </TableHead>
-                    <TableHead className="hidden sm:table-cell text-bold text-gray-600">
-                        Category
-                    </TableHead>
-                    <TableHead className="sm:table-cell hidden">
-                    </TableHead>
-                </TableRow>
-            </TableHeader>
+        <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
+            <Table className="w-full">
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="hidden sm:table-cell"></TableHead>
+                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Title</TableHead>
+                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">DueOn</TableHead>
+                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Status</TableHead>
+                        <TableHead className="hidden sm:table-cell text-bold text-gray-600">Category</TableHead>
+                        <TableHead className="sm:table-cell hidden"></TableHead>
+                    </TableRow>
+                </TableHeader>
 
-            <TableBody className="bg-[#F1F1F1]">
-                {/* Todo Section */}
-                <TableRow className="cursor-pointer" onClick={() => setShowTodo(!showTodo)}>
-                    <TableCell
-                        colSpan={6}
-                        className="bg-[rgb(250,195,255)] font-semibold p-2 text-left rounded-t-md"
-                    >
-                        Todo ({todoTasks?.length})
-                        {showTodo ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
-                    </TableCell>
-                </TableRow>
-                <TableRow className="hidden sm:table-row">
-                    <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
-                </TableRow>
-                {addTaskClicked && (<AddTaskInTable setAddTaskClicked={setAddTaskClicked} />)}
-                {showTodo && todoTasks && todoTasks?.length > 0 && (
-                    todoTasks.map((task) => (
-                        <TasksLists key={task.uuid} task={task} />
-                    ))
-                )}
-                {!showTodo && todoTasks?.length === 0 && (
-                    <NoTasks status="todo" />
-                )}
-                <TableRow className="hidden sm:table-row bg-background h-8">
-                </TableRow>
+                <TableBody className="bg-[#F1F1F1]">
+                    {Object.entries(groupedTasks).map(([status, taskList]) => (
+                        <>
+                            <TableRow key={status} className="cursor-pointer" onClick={() => {
+                                if (status === "TODO") setShowTodo(!showTodo);
+                                if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
+                                if (status === "COMPLETED") setShowCompleted(!showCompleted);
+                            }}>
+                                <TableCell colSpan={6} className={`bg-${status === "TODO" ? "[rgb(250,195,255)]" : status === "IN_PROGRESS" ? "[rgb(173,216,230)]" : "[rgb(173,255,173)]"} font-semibold p-2 text-left rounded-t-md`}>
+                                    {status} ({taskList.length})
+                                    <ChevronUp size={16} className={`float-right transform ${((status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)) ? "" : "rotate-180"}`} />
+                                </TableCell>
+                            </TableRow>
 
-                {/* In Progress Section */}
-                <TableRow className="cursor-pointer" onClick={() => setShowInProgress(!showInProgress)}>
-                    <TableCell
-                        colSpan={6}
-                        className="bg-[rgb(173,216,230)] font-semibold p-2 text-left rounded-t-md"
-                    >
-                        In Progress ({inProgressTasks?.length})
-                        {showInProgress ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
-                    </TableCell>
-                </TableRow>
-                {showInProgress && inProgressTasks && inProgressTasks?.length > 0 && (
-                    inProgressTasks.map((task) => (
-                        <TasksLists key={task.uuid} task={task} />
-                    ))
-                )}
-                {!showInProgress && inProgressTasks?.length === 0 && (
-                    <NoTasks status="in progress" />
-                )}
-                <TableRow className="hidden sm:table-row bg-background h-8">
-                </TableRow>
+                            <TableRow className="hidden sm:table-row">
+                                <TableCell colSpan={6} onClick={() => setAddTaskClicked(!addTaskClicked)} className="cursor-pointer">+ Add Task </TableCell>
+                            </TableRow>
+                            {addTaskClicked && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
 
-                {/* Completed Section */}
-                <TableRow className="cursor-pointer" onClick={() => setShowCompleted(!showCompleted)}>
-                    <TableCell
-                        colSpan={6}
-                        className="bg-[rgb(173,255,173)] font-semibold p-2 text-left rounded-t-md"
-                    >
-                        Completed ({completedTasks?.length})
-                        {showCompleted ? (<ChevronUp size={16} className="float-right" />) : (<ChevronUp size={16} className="float-right transform rotate-180" />)}
-                    </TableCell>
-                </TableRow>
-                {showCompleted && completedTasks && completedTasks?.length > 0 && (
-                    completedTasks.map((task) => (
-                        <TasksLists key={task.uuid} task={task} />
-                    ))
-                )}
-                {!showCompleted && completedTasks?.length === 0 && (
-                    <NoTasks status="completed" />
-                )}
-                <TableRow className="hidden sm:table-row bg-background h-8">
-                </TableRow>
-            </TableBody>
-        </Table>
+                            <SortableContext items={taskList.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
+                                {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
+                                    ? taskList.map((task) => (
+                                        <TasksLists key={task.uuid} task={task} />
+                                    ))
+                                    : null}
+                            </SortableContext>
+
+                            {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
+                        </>
+                    ))}
+                </TableBody>
+            </Table>
+        </DndContext>
     );
 };
 

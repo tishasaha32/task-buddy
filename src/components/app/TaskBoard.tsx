@@ -1,38 +1,46 @@
+import { useState } from "react";
 import TaskCard from "./TaskCard";
-import { tasks } from "@/data/tasks";
+import { tasks as initialTasks } from "@/data/tasks";
+import { DndContext, closestCorners } from "@dnd-kit/core";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 const TaskBoard = () => {
-    const todoTasks = tasks?.filter((task) => task.status === "TODO");
-    const inProgressTasks = tasks?.filter((task) => task.status === "IN_PROGRESS");
-    const completedTasks = tasks?.filter((task) => task.status === "COMPLETED");
+    const [tasks, setTasks] = useState(initialTasks);
+
+    // Group tasks by status
+    const groupedTasks = {
+        TODO: tasks.filter((task) => task.status === "TODO"),
+        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
+        COMPLETED: tasks.filter((task) => task.status === "COMPLETED"),
+    };
+
+    // Handle drag end
+    const handleDragEnd = (event: any) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+
+        setTasks((prevTasks) => {
+            const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
+            const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
+            return arrayMove(prevTasks, oldIndex, newIndex);
+        });
+    };
 
     return (
-        <div className="grid grid-cols-3 lg:grid-cols-4 gap-5 mt-5">
-            <div className={todoTasks?.length ? "flex flex-col bg-[#F1F1F1] min-h-[70vh] p-2 rounded-3xl" : "flex flex-col bg-[#F1F1F1] p-2 rounded-3xl"}>
-                <div className="flex items-start pb-3">
-                    <h1 className="px-2 rounded-2xl text-sm bg-[#FAC3FF]">TODO</h1>
-                </div>
-                {todoTasks?.map((task) => (
-                    <TaskCard task={task} key={task.uuid} />
+        <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+            <div className="grid grid-cols-3 lg:grid-cols-4 gap-5 mt-5">
+                {Object.entries(groupedTasks).map(([status, tasks]) => (
+                    <div key={status} className="flex flex-col bg-[#F1F1F1] min-h-[70vh] p-2 rounded-3xl">
+                        <h1 className={status === "TODO" ? "px-2 rounded-2xl w-16 text-center text-sm mb-4 bg-[#FAC3FF]" : status === "IN_PROGRESS" ? "px-2 rounded-2xl w-28 mb-4 text-center text-sm bg-[#FFD6A5]" : "px-2 rounded-2xl w-24 text-center text-sm mb-4 bg-[#A2D6A0]"}>{status}</h1>
+                        <SortableContext items={tasks.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
+                            {tasks.map((task) => (
+                                <TaskCard task={task} key={task.uuid} />
+                            ))}
+                        </SortableContext>
+                    </div>
                 ))}
             </div>
-            <div className={inProgressTasks?.length ? "flex flex-col bg-[#F1F1F1] min-h-[70vh] p-2 rounded-3xl" : "flex flex-col bg-[#F1F1F1] p-2 rounded-3xl"}>
-                <div className="flex items-start pb-3">
-                    <h1 className="px-2 rounded-2xl text-sm bg-[#FFD6A5]">IN PROGRESS</h1>
-                </div>
-                {inProgressTasks?.map((task) => (
-                    <TaskCard task={task} key={task.uuid} />
-                ))}
-            </div>
-            <div className={completedTasks && completedTasks?.length > 0 ? "flex flex-col bg-[#F1F1F1] min-h-[70vh] p-2 rounded-3xl" : "flex flex-col bg-[#F1F1F1] h-[10vh] p-2 rounded-3xl"}>
-                <div className="flex items-start pb-3">
-                    <h1 className="px-2 rounded-2xl text-sm bg-[#A2D6A0]">COMPLETED</h1>
-                </div>
-                {completedTasks?.map((task) => (
-                    <TaskCard task={task} key={task.uuid} />
-                ))}
-            </div>
-        </div>
+        </DndContext>
     );
 };
 
