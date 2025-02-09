@@ -90,7 +90,7 @@ const TasksLists = ({ task }: TasksListProps) => {
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.status}</TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.category}</TableCell>
-                <TableCell className="hidden">
+                <TableCell className="hidden md:table-cell">
                     <Popover>
                         <PopoverTrigger asChild>
                             <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />
@@ -117,7 +117,7 @@ const TasksLists = ({ task }: TasksListProps) => {
                         </PopoverContent>
                     </Popover>
                 </TableCell>
-                <TableCell className="md:table-cell">
+                <TableCell className="md:hidden">
                     <Popover>
                         <PopoverTrigger asChild>
                             <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />

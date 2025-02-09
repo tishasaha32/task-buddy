@@ -1,9 +1,13 @@
 import { z } from "zod";
 import { useState } from "react";
+import ReactQuill from 'react-quill-new';
 import { useForm } from "react-hook-form";
+import { CalendarDays } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
+import 'react-quill-new/dist/quill.snow.css';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,10 +16,6 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
-import { ScrollArea } from "../ui/scroll-area";
 
 interface AddTaskDrawerMobileProps {
     openDialog: boolean;
@@ -113,7 +113,7 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
                                     render={({ field }) => (
                                         <FormItem>
                                             <p className="text-gray-500 text-sm">Due on <span>*</span></p>
-                                            <DatePicker value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
+                                            <DatePicker endContent={<CalendarDays />} value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
                                             <FormMessage />
                                         </FormItem>
                                     )}

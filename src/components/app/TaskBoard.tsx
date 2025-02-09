@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskCard from "./TaskCard";
-import { tasks as initialTasks } from "@/data/tasks";
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
-const TaskBoard = () => {
-    const [tasks, setTasks] = useState(initialTasks);
+const TaskBoard = ({ tasks }: { tasks: Task[] }) => {
+    const [tasksData, setTasksData] = useState(tasks);
+
+    useEffect(() => {
+        setTasksData(tasks);
+    }, [tasks]);
 
     // Group tasks by status
     const groupedTasks = {
-        TODO: tasks.filter((task) => task.status === "TODO"),
-        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
-        COMPLETED: tasks.filter((task) => task.status === "COMPLETED"),
+        TODO: tasksData.filter((task) => task.status === "TODO"),
+        IN_PROGRESS: tasksData.filter((task) => task.status === "IN_PROGRESS"),
+        COMPLETED: tasksData.filter((task) => task.status === "COMPLETED"),
     };
 
     // Handle drag end
@@ -19,7 +22,7 @@ const TaskBoard = () => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
-        setTasks((prevTasks) => {
+        setTasksData((prevTasks) => {
             const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
             const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
             return arrayMove(prevTasks, oldIndex, newIndex);

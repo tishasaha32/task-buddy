@@ -1,4 +1,4 @@
-import { CornerDownLeft } from "lucide-react"
+import { CalendarDays, CornerDownLeft } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/date-picker"
@@ -14,7 +14,7 @@ const AddTaskInTable = ({ setAddTaskClicked }: { setAddTaskClicked: React.Dispat
                     <Input type="text" placeholder="Task Title" className="border-none" />
                 </TableCell>
                 <TableCell>
-                    <DatePicker placeholder="Add Date" className="bg-[#F1F1F1] w-[120px] rounded-3xl" />
+                    <DatePicker startContent={<CalendarDays />} placeholder="Add Date" className="bg-[#F1F1F1] w-[120px] rounded-3xl" />
                 </TableCell>
                 <TableCell>
                     <Popover>

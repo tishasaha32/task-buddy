@@ -1,17 +1,20 @@
+import { tasks } from "@/data"
 import { useState } from "react"
-import { cn } from "@/lib/utils"
-import AddDialog from "./AddTaskDialog"
 import TaskBoard from "./TaskBoard"
+import AddDialog from "./AddTaskDialog"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "../ui/date-picker"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Search } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const Board = () => {
+    const [tasksData, setTasksData] = useState(tasks);
     const [openDialog, setOpenDialog] = useState<boolean>(false);
-
+    const handleCategorySelect = (category: string) => {
+        const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
+        setTasksData(tasksFiltered);
+    }
     return (
         <>
             {openDialog && (
@@ -23,7 +26,7 @@ const Board = () => {
             <div className="flex justify-between items-center gap-5">
                 <div className="flex items-center gap-3">
                     <p className="text-gray-500 text-sm">Filter By: </p>
-                    <Select>
+                    <Select onValueChange={(value) => handleCategorySelect(value)}>
                         <SelectTrigger className="w-28 rounded-3xl">
                             <SelectValue placeholder="Category" />
                         </SelectTrigger>
@@ -34,33 +37,14 @@ const Board = () => {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "w-28 rounded-3xl text-gray-500",
-                                )}
-                            >
-                                <span>Due Date</span>
-                                <ChevronDown size={20} />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => console.log(date)} />
                 </div>
                 <div className="flex items-center gap-3">
                     <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} />
                     <Button className="rounded-3xl" onClick={() => setOpenDialog(true)}>Add Task</Button>
                 </div>
             </div>
-            <TaskBoard />
+            <TaskBoard tasks={tasksData} />
         </>
     )
 }

@@ -10,11 +10,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { CalendarDays } from "lucide-react";
 
 interface AddTaskDialogProps {
     openDialog: boolean;
@@ -111,7 +112,7 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <p className="text-gray-500 text-sm">Due on <span>*</span></p>
-                                        <DatePicker value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
+                                        <DatePicker endContent={<CalendarDays />} value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
                                         <FormMessage />
                                     </FormItem>
                                 )}

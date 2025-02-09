@@ -2,6 +2,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
+import { CalendarDays } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
 import "react-quill-new/dist/quill.snow.css";
@@ -137,7 +138,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <p className="text-gray-500 text-sm">Due on <span>*</span></p>
-                                                    <DatePicker value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
+                                                    <DatePicker endContent={<CalendarDays />} value={field.value ? new Date(field.value) : undefined} onChange={field.onChange} placeholder="DD/MM/YYYY" className="w-[180px]" />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}

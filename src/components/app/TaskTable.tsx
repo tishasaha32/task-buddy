@@ -1,41 +1,28 @@
-import { useState } from "react";
-import { tasks as initialTasks } from "@/data";
+import React, { useEffect, useState } from "react";
 import NoTasks from "./NoTasks";
 import TasksLists from "./TasksLists";
-import AddTaskInTable from "./AddTaskInTable";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import { ChevronUp } from "lucide-react";
+import AddTaskInTable from "./AddTaskInTable";
+import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import {
-    DndContext,
-    closestCorners,
-    DragEndEvent,
-} from "@dnd-kit/core";
-import {
-    SortableContext,
-    arrayMove,
-    verticalListSortingStrategy
-} from "@dnd-kit/sortable";
-
-const TaskTable = () => {
-    const [tasks, setTasks] = useState(initialTasks);
+const TaskTable = ({ tasks }: { tasks: Task[] }) => {
     const [showTodo, setShowTodo] = useState(true);
     const [showCompleted, setShowCompleted] = useState(true);
     const [showInProgress, setShowInProgress] = useState(true);
     const [addTaskClicked, setAddTaskClicked] = useState(false);
+    const [tasksData, setTasksData] = useState(tasks as Task[]);
+
+    useEffect(() => {
+        setTasksData(tasks);
+    }, [tasks]);
 
     const updateTaskOrder = (event: DragEndEvent) => {
         const { active, over } = event;
         if (!over) return;
 
-        setTasks((prevTasks) => {
+        setTasksData((prevTasks) => {
             const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
             const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
 
@@ -44,10 +31,12 @@ const TaskTable = () => {
     };
 
     const groupedTasks = {
-        TODO: tasks.filter((task) => task.status === "TODO"),
-        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
-        COMPLETED: tasks.filter((task) => task.status === "COMPLETED"),
+        TODO: tasksData.filter((task) => task.status === "TODO"),
+        IN_PROGRESS: tasksData.filter((task) => task.status === "IN_PROGRESS"),
+        COMPLETED: tasksData.filter((task) => task.status === "COMPLETED"),
     };
+
+    // console.log(groupedTasks);
 
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
@@ -66,8 +55,8 @@ const TaskTable = () => {
 
                     <TableBody className="bg-[#F1F1F1]">
                         {Object.entries(groupedTasks).map(([status, taskList]) => (
-                            <>
-                                <TableRow key={status} className="cursor-pointer" onClick={() => {
+                            <React.Fragment key={status}>
+                                <TableRow className="cursor-pointer" onClick={() => {
                                     if (status === "TODO") setShowTodo(!showTodo);
                                     if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
                                     if (status === "COMPLETED") setShowCompleted(!showCompleted);
@@ -96,7 +85,7 @@ const TaskTable = () => {
                                 </TableRow>
 
                                 {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
-                            </>
+                            </React.Fragment>
                         ))}
                     </TableBody>
                 </Table>

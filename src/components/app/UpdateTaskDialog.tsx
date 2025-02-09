@@ -16,17 +16,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarDays } from "lucide-react";
 
 interface UpdateTaskDialogProps {
     task: Task;
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
-const UpdateTaskDialog = ({
-    task,
-    openDialog,
-    setOpenDialog,
-}: UpdateTaskDialogProps) => {
+const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogProps) => {
+
     const [value, setValue] = useState<string>("");
     useEffect(() => {
         setValue(task?.description || "");
@@ -52,7 +50,6 @@ const UpdateTaskDialog = ({
         resolver: zodResolver(TaskSchema),
     });
 
-    // Submit the form data and set it in local storage
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
         console.log(values);
     };
@@ -148,6 +145,7 @@ const UpdateTaskDialog = ({
                                                         Due on <span>*</span>
                                                     </p>
                                                     <DatePicker
+                                                        endContent={<CalendarDays />}
                                                         value={task?.dueDate || null}
                                                         onChange={field.onChange}
                                                         placeholder="Select a date"

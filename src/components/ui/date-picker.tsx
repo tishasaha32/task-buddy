@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Button } from "./button";
 import { Calendar } from "./calendar";
-import { CalendarDays } from "lucide-react";
 import { DayPicker, Matcher } from "react-day-picker";
 import { ComponentProps, ReactNode, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -38,7 +37,7 @@ const DatePicker = ({ className, disabled, endContent, onChange, placeholder, re
 					size="lg"
 					variant={"outline"}
 				>
-					{startContent ?? <CalendarDays />}
+					{startContent}
 					<div className="w-full text-left">{value ? format(new Date(value), "do LLL, yyyy") : <span>{placeholder ?? ""}</span>}</div>
 					{endContent}
 				</Button>

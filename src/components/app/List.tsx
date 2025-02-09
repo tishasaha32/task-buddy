@@ -1,3 +1,4 @@
+import { tasks } from "@/data";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import TaskTable from "./TaskTable";
@@ -12,8 +13,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const List = () => {
+    const [tasksData, setTasksData] = useState(tasks);
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);
     const [openAddTaskDrawerMobile, setOpenAddTaskDrawerMobile] = useState<boolean>(false);
+
+    const handleCategorySelect = (category: string) => {
+        const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
+        setTasksData(tasksFiltered);
+    }
+
     return (
         <>
             {openAddTaskDialog && (
@@ -35,7 +43,7 @@ const List = () => {
                 <div className="flex flex-col md:flex-row md:items-center gap-3">
                     <p className="text-gray-500 text-sm">Filter By: </p>
                     <div className="flex gap-2">
-                        <Select>
+                        <Select onValueChange={(value) => handleCategorySelect(value)}>
                             <SelectTrigger className="w-28 rounded-3xl">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
@@ -78,7 +86,7 @@ const List = () => {
                 </div>
             </div>
             <Separator className="mt-5 mb-1 hidden md:block" />
-            <TaskTable />
+            <TaskTable tasks={tasksData} />
         </>
     );
 };
