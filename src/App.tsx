@@ -1,12 +1,29 @@
+import { Home, Login, Profile } from "@/pages";
+import PrivateRoute from "@/components/app/PrivateRoute";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, Login } from "@/pages";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+
+        {/* Private Route */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
