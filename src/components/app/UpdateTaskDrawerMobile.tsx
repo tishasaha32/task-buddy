@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { format } from "date-fns";
+import { db } from "@/firebase/config";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { CalendarDays } from "lucide-react";
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
 import { Button } from "@/components/ui/button";
+import { doc, updateDoc } from "firebase/firestore";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -18,6 +20,7 @@ import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { useToast } from "@/hooks/use-toast";
 
 interface UpdateTaskDrawerMobileProps {
     task: Task;
@@ -26,6 +29,11 @@ interface UpdateTaskDrawerMobileProps {
 }
 const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskDrawerMobileProps) => {
     const [value, setValue] = useState<string>("");
+    const [update, setUpdate] = useState<boolean>(false);
+    const [category, setCategory] = useState<string>(task?.category || "");
+
+    const { toast } = useToast();
+
     useEffect(() => {
         setValue(task?.description || "");
     }, [task]);
@@ -50,7 +58,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
         dueDate: task?.dueDate || null,
         status: task?.status || "",
         category: task?.category || "",
-        attachments: task?.attachments,
+        attachments: [],
     };
 
     const form = useForm<z.infer<typeof TaskSchema>>({
@@ -59,9 +67,61 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
         resolver: zodResolver(TaskSchema),
     });
 
-    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        const payload = { ...values, description: value };
-        console.log(payload)
+    const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
+        setUpdate(true);
+
+        if (values?.attachments && values?.attachments?.length > 0) {
+            //Store file to cloudinary
+            const data = new FormData();
+            data.append("file", values?.attachments[0]);
+            data.append("upload_preset", "task_buddy");
+            data.append("cloud_name", "dlatzxjdp");
+
+            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
+                method: "post",
+                body: data,
+            })
+            const uploadImage = await res.json();
+
+            //Store task to firestore
+            const taskRef = doc(db, "tasks", task.id);
+            const updatedTask = {
+                ...values,
+                attachments: uploadImage.url,
+                description: value,
+                updatedAt: new Date().toISOString(),
+            };
+            await updateDoc(taskRef, updatedTask);
+            if (taskRef.id) {
+                toast({ title: "Task updated successfully" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task update failed" })
+            }
+        }
+        else {
+            const taskRef = doc(db, "tasks", task.id);
+            const updatedTask = {
+                ...values,
+                attachments: "",
+                description: value,
+                updatedAt: new Date().toISOString(),
+            };
+            await updateDoc(taskRef, updatedTask);
+            if (taskRef.id) {
+                toast({ title: "Task updated successfully" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task update failed" })
+            }
+        }
+        setUpdate(false);
+        setOpenDialog(false);
+    };
+
+    const handleCategory = (category: string) => {
+        setCategory(category);
+        form.setValue("category", category);
     };
 
     return (
@@ -119,21 +179,19 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                                                     <div className="flex gap-2">
                                                         <Badge
                                                             variant={
-                                                                task?.category === "Personal"
-                                                                    ? "default"
-                                                                    : "outline"
+                                                                category === "Personal" ? "default" : "outline"
                                                             }
-                                                            className="px-4 py-2"
+                                                            className="px-4 py-2 cursor-pointer"
+                                                            onClick={() => handleCategory("Personal")}
                                                         >
                                                             Personal
                                                         </Badge>
                                                         <Badge
                                                             variant={
-                                                                task?.category === "Work"
-                                                                    ? "default"
-                                                                    : "outline"
+                                                                category === "Work" ? "default" : "outline"
                                                             }
-                                                            className="px-4 py-2"
+                                                            className="px-4 py-2 cursor-pointer"
+                                                            onClick={() => handleCategory("Work")}
                                                         >
                                                             Work
                                                         </Badge>
@@ -182,6 +240,9 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                                                 <FormItem>
                                                     <p className="text-gray-500 text-sm">Attachments</p>
                                                     <FileInput maxFiles={1} accept={accept} {...field} />
+                                                    {task?.attachments.length > 0 && form.getValues("attachments")?.length === 0 && (
+                                                        <img src={task?.attachments as string} className="h-40 w-40 rounded-lg object-cover" />
+                                                    )}
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -196,7 +257,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                                         onClick={() => form.handleSubmit((values) => onSubmit(values))()}
                                         className="rounded-3xl"
                                     >
-                                        Create
+                                        {update ? "Updating..." : "Update"}
                                     </Button>
                                 </DrawerFooter>
                             </form>
@@ -207,7 +268,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                             <div className="flex flex-col gap-2 p-2 w-screen">
                                 <div className="text-sm flex justify-between items-center">
                                     <p>You created this task</p>
-                                    <p className="text-gray-500">{format(task?.createdAt, "PPP")}</p>
+                                    {/* <p className="text-gray-500">{format(task?.createdAt, "PPP")}</p> */}
                                 </div>
                                 {task?.updatedAt && (
                                     <div className="text-sm flex justify-between items-center">
