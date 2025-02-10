@@ -5,7 +5,7 @@ type Task = {
   category: "Work" | "Personal";
   dueDate: Date;
   status: "TODO" | "IN_PROGRESS" | "COMPLETED";
-  attachments: File[];
+  attachments: File[] | string;
   createdAt: Date;
   userUid: string;
   updatedAt?: Date;

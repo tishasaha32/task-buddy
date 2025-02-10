@@ -31,9 +31,9 @@ const List = () => {
                     dueDate: data?.dueDate ? new Date(data?.dueDate.toDate()) : new Date(),
                     status: data?.status as "TODO" | "IN_PROGRESS" | "COMPLETED",
                     attachments: data?.attachments || [],
-                    createdAt: data?.createdAt ? new Date(data?.createdAt.toDate()) : new Date(),
-                    updatedAt: data?.updatedAt ? new Date(data?.updatedAt.toDate()) : undefined,
-                    fileUpdatedAt: data?.fileUpdatedAt ? new Date(data?.fileUpdatedAt.toDate()) : undefined,
+                    createdAt: data?.createdAt ? new Date(data?.createdAt) : new Date(),
+                    updatedAt: data?.updatedAt ? new Date(data?.updatedAt) : undefined,
+                    fileUpdatedAt: data?.fileUpdatedAt ? new Date(data?.fileUpdatedAt) : undefined,
                     userUid: data?.userUid || "",
                 };
             });
@@ -51,7 +51,7 @@ const List = () => {
             setFilteredTasks(tasksData);
         };
         fetchTasks();
-    }, []);
+    }, [tasks]);
 
     const handleDateSelect = (date: Date | undefined) => {
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));

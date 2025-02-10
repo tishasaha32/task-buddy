@@ -1,15 +1,18 @@
 import { z } from "zod";
 import { format } from "date-fns";
+import { db } from "@/firebase/config";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
 import { Button } from "@/components/ui/button";
+import { doc, updateDoc } from "firebase/firestore";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -25,7 +28,12 @@ interface UpdateTaskDialogProps {
 }
 const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogProps) => {
 
+    const { toast } = useToast();
+
     const [value, setValue] = useState<string>("");
+    const [update, setUpdate] = useState<boolean>(false);
+    const [category, setCategory] = useState<string>(task?.category || "");
+
     useEffect(() => {
         setValue(task?.description || "");
     }, [task]);
@@ -35,7 +43,6 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
         "image/png": [".png"],
     };
 
-    console.log(value);
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
     };
@@ -46,7 +53,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
         dueDate: task?.dueDate || null,
         status: task?.status || "",
         category: task?.category || "",
-        attachments: task?.attachments,
+        attachments: [],
     };
 
     const form = useForm<z.infer<typeof TaskSchema>>({
@@ -55,9 +62,61 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
         resolver: zodResolver(TaskSchema),
     });
 
-    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        const payload = { ...values, description: value };
-        console.log(payload)
+    const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
+        setUpdate(true);
+
+        if (values?.attachments && values?.attachments?.length > 0) {
+            //Store file to cloudinary
+            const data = new FormData();
+            data.append("file", values?.attachments[0]);
+            data.append("upload_preset", "task_buddy");
+            data.append("cloud_name", "dlatzxjdp");
+
+            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
+                method: "post",
+                body: data,
+            })
+            const uploadImage = await res.json();
+
+            //Store task to firestore
+            const taskRef = doc(db, "tasks", task.id);
+            const updatedTask = {
+                ...values,
+                attachments: uploadImage.url,
+                description: value,
+                updatedAt: new Date().toISOString(),
+            };
+            await updateDoc(taskRef, updatedTask);
+            if (taskRef.id) {
+                toast({ title: "Task updated successfully" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task update failed" })
+            }
+        }
+        else {
+            const taskRef = doc(db, "tasks", task.id);
+            const updatedTask = {
+                ...values,
+                attachments: "",
+                description: value,
+                updatedAt: new Date().toISOString(),
+            };
+            await updateDoc(taskRef, updatedTask);
+            if (taskRef.id) {
+                toast({ title: "Task updated successfully" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task update failed" })
+            }
+        }
+        setUpdate(false);
+        setOpenDialog(false);
+    };
+
+    const handleCategory = (category: string) => {
+        setCategory(category);
+        form.setValue("category", category);
     };
 
     return (
@@ -122,21 +181,19 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                                     <div className="flex gap-2">
                                                         <Badge
                                                             variant={
-                                                                task?.category === "Personal"
-                                                                    ? "default"
-                                                                    : "outline"
+                                                                category === "Personal" ? "default" : "outline"
                                                             }
-                                                            className="px-4 py-2"
+                                                            className="px-4 py-2 cursor-pointer"
+                                                            onClick={() => handleCategory("Personal")}
                                                         >
                                                             Personal
                                                         </Badge>
                                                         <Badge
                                                             variant={
-                                                                task?.category === "Work"
-                                                                    ? "default"
-                                                                    : "outline"
+                                                                category === "Work" ? "default" : "outline"
                                                             }
-                                                            className="px-4 py-2"
+                                                            className="px-4 py-2 cursor-pointer"
+                                                            onClick={() => handleCategory("Work")}
                                                         >
                                                             Work
                                                         </Badge>
@@ -202,6 +259,9 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                                 <FormItem>
                                                     <p className="text-gray-500 text-sm">Attachments</p>
                                                     <FileInput maxFiles={1} accept={accept} {...field} />
+                                                    {task?.attachments.length > 0 && form.getValues("attachments")?.length === 0 && (
+                                                        <img src={task?.attachments as string} className="h-40 w-40 rounded-lg object-cover" />
+                                                    )}
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -216,7 +276,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     <div className="flex flex-col gap-2 p-2 w-full">
                                         <div className="text-gray-500 text-xs flex justify-between items-center">
                                             <p>You created this task</p>
-                                            <p>{format(task?.createdAt, "PPP")}</p>
+                                            {/* <p>{format(task?.createdAt, "PPP")}</p> */}
                                         </div>
                                         {task?.updatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">
@@ -247,7 +307,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     }
                                     className="rounded-3xl"
                                 >
-                                    Update
+                                    {update ? "Updating..." : "Update"}
                                 </Button>
                             </DialogFooter>
                         </form>
