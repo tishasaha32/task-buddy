@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 
 const List = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);
     const [openAddTaskDrawerMobile, setOpenAddTaskDrawerMobile] = useState<boolean>(false);
 
@@ -36,10 +37,10 @@ const List = () => {
                     userUid: data?.userUid || "",
                 };
             });
-            return tasksList;
+            return tasksList as Task[];
         } catch (error) {
             console.error("Error fetching tasks:", error);
-            return [];
+            return [] as Task[];
         }
     };
 
@@ -47,22 +48,23 @@ const List = () => {
         const fetchTasks = async () => {
             const tasksData = await getTasks();
             setTasks(tasksData);
+            setFilteredTasks(tasksData);
         };
         fetchTasks();
     }, []);
 
     const handleDateSelect = (date: Date | undefined) => {
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
-        setTasks(tasksFiltered);
+        setFilteredTasks(tasksFiltered);
     }
     const handleCategorySelect = (category: string) => {
-        const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
-        setTasks(tasksFiltered);
+        const tasksFiltered = tasks.filter((task) => task?.category === category);
+        setFilteredTasks(tasksFiltered);
     }
 
     const handleSearch = (searchTerm: string) => {
         const tasksFiltered = tasks.filter((task) => task?.title?.toLowerCase().includes(searchTerm.toLowerCase()));
-        setTasks(tasksFiltered);
+        setFilteredTasks(tasksFiltered);
     }
 
     return (
@@ -92,8 +94,8 @@ const List = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value="work">Work</SelectItem>
-                                    <SelectItem value="personal">Personal</SelectItem>
+                                    <SelectItem value="Work">Work</SelectItem>
+                                    <SelectItem value="Personal">Personal</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
@@ -116,7 +118,7 @@ const List = () => {
                 </div>
             </div>
             <Separator className="mt-5 mb-1 hidden md:block" />
-            <TaskTable tasks={tasks} />
+            <TaskTable tasks={filteredTasks} />
         </>
     );
 };

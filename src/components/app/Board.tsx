@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 
 const Board = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [category, setCategory] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [category, setCategory] = useState<string>("");
+    const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
     const getTasks = async (): Promise<Task[]> => {
@@ -36,10 +37,10 @@ const Board = () => {
                     userUid: data.userUid || "",
                 };
             });
-            return tasksList;
+            return tasksList as Task[];
         } catch (error) {
             console.error("Error fetching tasks:", error);
-            return [];
+            return [] as Task[];
         }
     };
 
@@ -47,26 +48,27 @@ const Board = () => {
         const fetchTasks = async () => {
             const tasksData = await getTasks();
             setTasks(tasksData);
+            setFilteredTasks(tasksData);
         };
         fetchTasks();
     }, []);
 
     const handleCategorySelect = (category: string) => {
         setCategory(category);
-        const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
-        setTasks(tasksFiltered);
+        const tasksFiltered = tasks.filter((task) => task?.category === category);
+        setFilteredTasks(tasksFiltered);
     }
 
     const handleDateSelect = (date: Date | undefined) => {
         setSelectedDate(date);
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
-        setTasks(tasksFiltered);
+        setFilteredTasks(tasksFiltered);
     }
 
     const handleSearch = (searchTerm: string) => {
         setSearchTerm(searchTerm);
         const tasksFiltered = tasks.filter((task) => task?.title?.toLowerCase().includes(searchTerm.toLowerCase()));
-        setTasks(tasksFiltered);
+        setFilteredTasks(tasksFiltered);
     }
 
     return (
@@ -86,8 +88,8 @@ const Board = () => {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="work">Work</SelectItem>
-                                <SelectItem value="personal">Personal</SelectItem>
+                                <SelectItem value="Work">Work</SelectItem>
+                                <SelectItem value="Personal">Personal</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -98,7 +100,7 @@ const Board = () => {
                     <Button className="rounded-3xl" onClick={() => setOpenDialog(true)}>Add Task</Button>
                 </div>
             </div>
-            <TaskBoard tasks={tasks} searchTerm={searchTerm} selectedDate={selectedDate} category={category} />
+            <TaskBoard tasks={filteredTasks} searchTerm={searchTerm} selectedDate={selectedDate} category={category} />
         </>
     )
 }
