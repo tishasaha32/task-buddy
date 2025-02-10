@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
 import NoTasks from "./NoTasks";
 import TasksLists from "./TasksLists";
 import { ChevronUp } from "lucide-react";
 import AddTaskInTable from "./AddTaskInTable";
+import React, { useEffect, useState } from "react";
 import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -23,8 +23,8 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
         if (!over) return;
 
         setTasksData((prevTasks) => {
-            const oldIndex = prevTasks.findIndex((t) => t.uuid === active.id);
-            const newIndex = prevTasks.findIndex((t) => t.uuid === over.id);
+            const oldIndex = prevTasks.findIndex((t) => t.id === active.id);
+            const newIndex = prevTasks.findIndex((t) => t.id === over.id);
             return arrayMove(prevTasks, oldIndex, newIndex);
         });
     };
@@ -70,10 +70,10 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
                                     </TableRow>
                                 }
                                 {addTaskClicked && status === "TODO" && <AddTaskInTable setAddTaskClicked={setAddTaskClicked} />}
-                                <SortableContext items={taskList.map((t) => t.uuid)} strategy={verticalListSortingStrategy}>
+                                <SortableContext items={taskList.map((t) => t.id)} strategy={verticalListSortingStrategy}>
                                     {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
                                         ? taskList.map((task) => (
-                                            <TasksLists key={task.uuid} task={task} />
+                                            <TasksLists key={task.id} task={task} />
                                         ))
                                         : null}
                                 </SortableContext>

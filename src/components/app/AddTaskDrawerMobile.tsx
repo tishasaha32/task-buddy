@@ -109,7 +109,8 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
         setCategory(category);
         form.setValue("category", category);
     }
-    console.log(form?.getValues());
+
+
     return (
         <Drawer open={openDialog} onOpenChange={onOpenChange}>
             <DrawerContent className="flex flex-col items-start max-w-2xl p-0">

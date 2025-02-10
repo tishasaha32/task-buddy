@@ -1,6 +1,6 @@
-import { tasks } from "@/data";
-import { useState } from "react";
 import TaskTable from "./TaskTable";
+import { db } from "@/firebase/config";
+import { useEffect, useState } from "react";
 import AddTaskDialog from "./AddTaskDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,25 +8,61 @@ import { ChevronDown, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import AddTaskDrawerMobile from "./AddTaskDrawerMobile";
 import { DatePicker } from "@/components/ui/date-picker";
+import { collection, getDocs } from "firebase/firestore";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const List = () => {
-    const [tasksData, setTasksData] = useState(tasks);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);
     const [openAddTaskDrawerMobile, setOpenAddTaskDrawerMobile] = useState<boolean>(false);
 
+    const getTasks = async (): Promise<Task[]> => {
+        try {
+            const tasksCollection = collection(db, "tasks");
+            const tasksSnapshot = await getDocs(tasksCollection);
+            const tasksList: Task[] = tasksSnapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    title: data?.title || "",
+                    description: data?.description || "",
+                    category: data?.category as "Work" | "Personal",
+                    dueDate: data?.dueDate ? new Date(data?.dueDate.toDate()) : new Date(),
+                    status: data?.status as "TODO" | "IN_PROGRESS" | "COMPLETED",
+                    attachments: data?.attachments || [],
+                    createdAt: data?.createdAt ? new Date(data?.createdAt.toDate()) : new Date(),
+                    updatedAt: data?.updatedAt ? new Date(data?.updatedAt.toDate()) : undefined,
+                    fileUpdatedAt: data?.fileUpdatedAt ? new Date(data?.fileUpdatedAt.toDate()) : undefined,
+                    userUid: data?.userUid || "",
+                };
+            });
+            return tasksList;
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+            return [];
+        }
+    };
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            const tasksData = await getTasks();
+            setTasks(tasksData);
+        };
+        fetchTasks();
+    }, []);
+
     const handleDateSelect = (date: Date | undefined) => {
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
-        setTasksData(tasksFiltered);
+        setTasks(tasksFiltered);
     }
     const handleCategorySelect = (category: string) => {
         const tasksFiltered = tasks.filter((task) => task?.category === category.toUpperCase());
-        setTasksData(tasksFiltered);
+        setTasks(tasksFiltered);
     }
 
     const handleSearch = (searchTerm: string) => {
         const tasksFiltered = tasks.filter((task) => task?.title?.toLowerCase().includes(searchTerm.toLowerCase()));
-        setTasksData(tasksFiltered);
+        setTasks(tasksFiltered);
     }
 
     return (
@@ -80,7 +116,7 @@ const List = () => {
                 </div>
             </div>
             <Separator className="mt-5 mb-1 hidden md:block" />
-            <TaskTable tasks={tasksData} />
+            <TaskTable tasks={tasks} />
         </>
     );
 };

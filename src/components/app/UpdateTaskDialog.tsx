@@ -122,7 +122,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                                     <div className="flex gap-2">
                                                         <Badge
                                                             variant={
-                                                                task?.category === "PERSONAL"
+                                                                task?.category === "Personal"
                                                                     ? "default"
                                                                     : "outline"
                                                             }
@@ -132,7 +132,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                                         </Badge>
                                                         <Badge
                                                             variant={
-                                                                task?.category === "WORK"
+                                                                task?.category === "Work"
                                                                     ? "default"
                                                                     : "outline"
                                                             }

@@ -1,12 +1,13 @@
 type Task = {
-  uuid: string;
+  id: string;
   title: string;
   description: string;
-  category: "WORK" | "PERSONAL";
+  category: "Work" | "Personal";
   dueDate: Date;
   status: "TODO" | "IN_PROGRESS" | "COMPLETED";
   attachments: File[];
   createdAt: Date;
+  userUid: string;
   updatedAt?: Date;
   fileUpdatedAt?: Date;
 };
