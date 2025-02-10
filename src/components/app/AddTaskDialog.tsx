@@ -38,7 +38,15 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
     const [category, setCategory] = useState<string>("");
     const [value, setValue] = useState("");
 
-    console.log(value);
+    const accept: { [key: string]: string[] } = {
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "image/jpeg": [".jpeg", ".jpg"],
+        "image/png": [".png"],
+        "application/pdf": [".pdf"],
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+    };
 
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
@@ -59,16 +67,16 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
         resolver: zodResolver(TaskSchema),
     });
 
-    // Submit the form data and set it in local storage
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        console.log(values);
+        const payload = { ...values, description: value };
+        console.log(payload)
     };
 
     const handleCategory = (category: string) => {
         setCategory(category);
         form.setValue("category", category);
     };
-    console.log(form?.getValues());
+
     return (
         <Dialog open={openDialog} onOpenChange={onOpenChange}>
             <DialogContent className="flex flex-col items-start max-w-2xl p-0">
@@ -193,7 +201,7 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <p className="text-gray-500 text-sm">Attachments</p>
-                                            <FileInput maxFiles={1} {...field} />
+                                            <FileInput maxFiles={1} accept={accept} {...field} />
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -215,9 +223,7 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
                                     form?.getValues().category === "" ||
                                     form?.getValues().dueDate === null
                                 }
-                                onClick={() =>
-                                    form.handleSubmit((values) => onSubmit(values))()
-                                }
+                                type="submit"
                                 className="rounded-3xl"
                             >
                                 Create

@@ -26,7 +26,15 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
     const [category, setCategory] = useState<string>("");
     const [value, setValue] = useState('');
 
-    console.log(value);
+    const accept: { [key: string]: string[] } = {
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "image/jpeg": [".jpeg", ".jpg"],
+        "image/png": [".png"],
+        "application/pdf": [".pdf"],
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+    };
 
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
@@ -49,7 +57,8 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
 
     // Submit the form data and set it in local storage
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        console.log(values);
+        const payload = { ...values, description: value };
+        console.log(payload)
     };
 
     const handleCategory = (category: string) => {
@@ -146,7 +155,7 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
                                     render={({ field }) => (
                                         <FormItem>
                                             <p className="text-gray-500 text-sm">Attachments</p>
-                                            <FileInput maxFiles={1} {...field} />
+                                            <FileInput maxFiles={1} accept={accept} {...field} />
                                             <FormMessage />
                                         </FormItem>
                                     )}

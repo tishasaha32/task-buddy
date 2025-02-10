@@ -4,6 +4,7 @@ import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
+import { CalendarDays } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays } from "lucide-react";
 
 interface UpdateTaskDialogProps {
     task: Task;
@@ -29,6 +29,11 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
     useEffect(() => {
         setValue(task?.description || "");
     }, [task]);
+
+    const accept: { [key: string]: string[] } = {
+        "image/jpeg": [".jpeg", ".jpg"],
+        "image/png": [".png"],
+    };
 
     console.log(value);
     const onOpenChange = (open: boolean) => {
@@ -51,7 +56,8 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
     });
 
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        console.log(values);
+        const payload = { ...values, description: value };
+        console.log(payload)
     };
 
     return (
@@ -70,7 +76,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                             onSubmit={form.handleSubmit((values) => onSubmit(values))}
                         >
                             <div className="flex w-full h-full">
-                                <ScrollArea className="h-88 w-2/3">
+                                <ScrollArea className="h-80 w-2/3">
                                     <div className="flex w-full flex-col gap-3 px-6 py-0">
                                         <FormField
                                             control={form.control}
@@ -195,7 +201,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <p className="text-gray-500 text-sm">Attachments</p>
-                                                    <FileInput maxFiles={1} {...field} />
+                                                    <FileInput maxFiles={1} accept={accept} {...field} />
                                                     <FormMessage />
                                                 </FormItem>
                                             )}

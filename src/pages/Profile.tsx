@@ -13,14 +13,14 @@ const Profile = () => {
         return <div>Loading...</div>
     }
     return (
-        <div className="flex h-screen flex-col gap-5 justify-center items-center overflow-hidden relative bg-[#FFF9F9]">
+        <div className="flex h-screen flex-col gap-5 justify-center items-center overflow-hidden p-8 relative bg-[#FFF9F9]">
             <img src={Rings} className="absolute -top-16 -right-16" />
             <img src={Rings} className="absolute top-32 -left-24" />
             <ChevronLeft size={30} className="absolute top-5 left-5 cursor-pointer" onClick={() => window.history.back()} />
             <img src={user?.photoURL || ""} className="w-10 h-10 rounded-full" />
             <h1>User Profile</h1>
-            <Input className="w-96" readOnly value={user?.email || ""} />
-            <Input className="w-96" readOnly value={user?.displayName || ""} />
+            <Input className="md:w-96" readOnly value={user?.email || ""} />
+            <Input className="md:w-96" readOnly value={user?.displayName || ""} />
             <Button onClick={() => handleSignOut()} className="md:hidden"><LogOut />Logout</Button>
             <img src={Rings} className="absolute bottom-20" />
         </div>

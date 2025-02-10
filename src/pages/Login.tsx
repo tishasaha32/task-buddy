@@ -11,9 +11,9 @@ const Login = () => {
 
     const handleSignIn = async () => {
         try {
-            const user = await signInWithGoogle(); // Call the Google sign-in function
+            const user = await signInWithGoogle();
             console.log("User signed in:", user);
-            navigate("/"); // Navigate to home after successful sign-in
+            navigate("/");
         } catch (error) {
             console.error("Sign-in failed:", error);
         }
@@ -21,8 +21,8 @@ const Login = () => {
 
     return (
         <>
-            <div className="hidden lg:grid grid-cols-2 justify-center h-screen items-center gap-10">
-                <div className="flex flex-col justify-center gap-4 px-40">
+            <div className="hidden lg:grid grid-cols-2 justify-center h-screen items-center gap-10 relative overflow-hidden bg-[#FFF9F9]">
+                <div className="flex flex-col justify-center gap-4 pl-20 pr-40">
                     <h1 className="text-2xl flex items-center gap-2 text-primary font-semibold"><NotepadText size={30} />TaskBuddy</h1>
                     <p>Streamline your workflow and track progress effortlessly with our all-in-one task management app.</p>
                     <Button className="bg-black text-white rounded-xl hover:bg-black/80" onClick={handleSignIn}>
@@ -30,7 +30,7 @@ const Login = () => {
                     </Button>
                 </div>
                 <div className="hidden md:block">
-                    <img src={LoginPage} />
+                    <img src={LoginPage} className="absolute top-0 -right-80" />
                 </div>
             </div>
             <div className="flex h-screen flex-col gap-5 justify-center items-center overflow-hidden lg:hidden relative p-4 bg-[#FFF9F9]">
