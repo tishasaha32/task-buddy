@@ -1,42 +1,37 @@
 import { z } from "zod";
 import { useState } from "react";
+import { db } from "@/firebase/config";
+import ReactQuill from "react-quill-new";
+import { auth } from "@/firebase/config";
 import { useForm } from "react-hook-form";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
+import "react-quill-new/dist/quill.snow.css";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
+import { addDoc, collection } from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
-import { CalendarDays } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AddTaskDialogProps {
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
 const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
-    const [category, setCategory] = useState<string>("");
+    const { toast } = useToast();
+    const [user] = useAuthState(auth);
     const [value, setValue] = useState("");
+    const [category, setCategory] = useState<string>("");
+    const [creating, setCreating] = useState(false);
 
     const accept: { [key: string]: string[] } = {
         "application/msword": [".doc"],
@@ -67,9 +62,46 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
         resolver: zodResolver(TaskSchema),
     });
 
-    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        const payload = { ...values, description: value };
-        console.log(payload)
+    const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
+        setCreating(true);
+        if (values?.attachments && values?.attachments?.length > 0) {
+            //Store file to cloudinary
+            const data = new FormData();
+            data.append("file", values?.attachments[0]);
+            data.append("upload_preset", "task_buddy");
+            data.append("cloud_name", "dlatzxjdp");
+
+            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
+                method: "post",
+                body: data,
+            })
+            const uploadImage = await res.json();
+
+            //Store task to firestore
+            const payload = { ...values, attachments: uploadImage.url, description: value, userUid: user?.uid };
+            const docRef = await addDoc(collection(db, "tasks"), payload);
+            console.log("Task successfully saved with ID:", docRef.id);
+            if (docRef.id) {
+                toast({ title: "Task Created Successfully👍" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task Creation Failed👎" });
+            }
+        }
+        else {
+            //Store task to firestore
+            const payload = { ...values, attachments: "", description: value, userUid: user?.uid };
+            const docRef = await addDoc(collection(db, "tasks"), payload);
+            console.log("Task successfully saved with ID:", docRef.id);
+            if (docRef.id) {
+                toast({ title: "Task Created Successfully👍" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task Creation Failed👎" });
+            }
+        }
+        setCreating(false);
+        setOpenDialog(false);
     };
 
     const handleCategory = (category: string) => {
@@ -226,7 +258,14 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
                                 type="submit"
                                 className="rounded-3xl"
                             >
-                                Create
+                                {creating ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin" size={20} />
+                                        Creating
+                                    </div>
+                                ) : (
+                                    "Create"
+                                )}
                             </Button>
                         </DialogFooter>
                     </form>

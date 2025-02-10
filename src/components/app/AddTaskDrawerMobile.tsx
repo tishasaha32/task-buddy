@@ -16,6 +16,10 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { addDoc, collection } from "firebase/firestore";
+import { auth, db } from "@/firebase/config";
+import { useToast } from "@/hooks/use-toast";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 interface AddTaskDrawerMobileProps {
     openDialog: boolean;
@@ -23,8 +27,11 @@ interface AddTaskDrawerMobileProps {
 }
 const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileProps) => {
 
-    const [category, setCategory] = useState<string>("");
+    const { toast } = useToast();
+    const [user] = useAuthState(auth);
     const [value, setValue] = useState('');
+    const [creating, setCreating] = useState(false);
+    const [category, setCategory] = useState<string>("");
 
     const accept: { [key: string]: string[] } = {
         "application/msword": [".doc"],
@@ -56,9 +63,46 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
     });
 
     // Submit the form data and set it in local storage
-    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
-        const payload = { ...values, description: value };
-        console.log(payload)
+    const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
+        setCreating(true);
+        if (values?.attachments && values?.attachments?.length > 0) {
+            //Store file to cloudinary
+            const data = new FormData();
+            data.append("file", values?.attachments[0]);
+            data.append("upload_preset", "task_buddy");
+            data.append("cloud_name", "dlatzxjdp");
+
+            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
+                method: "post",
+                body: data,
+            })
+            const uploadImage = await res.json();
+
+            //Store task to firestore
+            const payload = { ...values, attachments: uploadImage.url, description: value, userUid: user?.uid };
+            const docRef = await addDoc(collection(db, "tasks"), payload);
+            console.log("Task successfully saved with ID:", docRef.id);
+            if (docRef.id) {
+                toast({ title: "Task Created Successfully👍" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task Creation Failed👎" });
+            }
+        }
+        else {
+            //Store task to firestore
+            const payload = { ...values, attachments: "", description: value, userUid: user?.uid };
+            const docRef = await addDoc(collection(db, "tasks"), payload);
+            console.log("Task successfully saved with ID:", docRef.id);
+            if (docRef.id) {
+                toast({ title: "Task Created Successfully👍" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task Creation Failed👎" });
+            }
+        }
+        setCreating(false);
+        setOpenDialog(false);
     };
 
     const handleCategory = (category: string) => {
@@ -93,9 +137,9 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
                                 <FormField
                                     control={form.control}
                                     name="description"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem>
-                                            <ReactQuill theme="snow" value={field.value} onChange={setValue} />
+                                            <ReactQuill theme="snow" value={value} onChange={setValue} />
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -170,7 +214,7 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
                                 onClick={() => form.handleSubmit((values) => onSubmit(values))()}
                                 className="rounded-3xl"
                             >
-                                Create
+                                {creating ? "Creating..." : "Create Task"}
                             </Button>
                         </DrawerFooter>
                     </form>
