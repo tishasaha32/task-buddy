@@ -1,5 +1,5 @@
 import { TableRow, TableCell } from "@/components/ui/table"
-const NoTasks = ({ status }: { status: string }) => {
+const NoTaskTable = ({ status }: { status: string }) => {
     return (
         <TableRow>
             <TableCell colSpan={6} className="text-center">
@@ -9,4 +9,4 @@ const NoTasks = ({ status }: { status: string }) => {
     )
 }
 
-export default NoTasks
+export default NoTaskTable

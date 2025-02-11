@@ -2,10 +2,10 @@ import { useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteDialog from "./DeleteDialog";
 import { useSortable } from "@dnd-kit/sortable";
-import UpdateTaskDialog from "./UpdateTaskDialog";
+import UpdateTaskDialog from "../container/UpdateTaskDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
-import UpdateTaskDrawerMobile from "./UpdateTaskDrawerMobile";
+import UpdateTaskDrawerMobile from "../container/UpdateTaskDrawerMobile";
 import {
     Ellipsis,
     CircleCheck,

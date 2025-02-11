@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import { db } from "@/firebase/config";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
@@ -292,18 +292,18 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     <div className="flex flex-col gap-2 p-2 w-full">
                                         <div className="text-gray-500 text-xs flex justify-between items-center">
                                             <p>You created this task</p>
-                                            <p>{task?.createdAt && format(task?.createdAt, "PPP")}</p>
+                                            {/* <p>{task?.createdAt && format(task?.createdAt, "PPP")}</p> */}
                                         </div>
                                         {task?.updatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You updated this task</p>
-                                                <p>{format(task?.updatedAt, "PPP")}</p>
+                                                {/* <p>{format(task?.updatedAt, "PPP")}</p> */}
                                             </div>
                                         )}
                                         {task?.fileUpdatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You uploaded file</p>
-                                                <p>{format(task?.fileUpdatedAt, "PPP")}</p>
+                                                {/* <p>{format(task?.fileUpdatedAt, "PPP")}</p> */}
                                             </div>
                                         )}
                                     </div>

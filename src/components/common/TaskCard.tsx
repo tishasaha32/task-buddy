@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UpdateDialog from "./UpdateTaskDialog";
+import UpdateDialog from "../container/UpdateTaskDialog";
 import DeleteDialog from "./DeleteDialog";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -106,7 +106,7 @@ const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) 
                 <CardContent className="flex items-center justify-between w-full gap-2 p-2">
                     <p className="text-xs text-gray-500">{task.category}</p>
                     <p className="text-xs text-gray-500">
-                        {task.dueDate && task.dueDate.toDateString()}
+                        {/* {task.dueDate && task.dueDate.toDateString()} */}
                     </p>
                 </CardContent>
             </Card>

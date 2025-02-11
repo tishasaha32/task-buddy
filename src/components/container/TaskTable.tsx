@@ -1,14 +1,13 @@
-import NoTasks from "./NoTasks";
-import TasksLists from "./TasksLists";
+import NoTaskTable from "../common/NoTaskTable";
+import TasksLists from "../common/TasksLists";
 import { ChevronUp, CopyCheck, X } from "lucide-react";
-import AddTaskInTable from "./AddTaskInTable";
+import AddTaskInTable from "../common/AddTaskInTable";
 import { Badge } from "@/components/ui/badge";
 import React, { useEffect, useState } from "react";
 import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Popover, PopoverContent } from "../ui/popover";
-import { PopoverTrigger } from "@radix-ui/react-popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { db } from "@/firebase/config";
 import { doc, writeBatch } from "firebase/firestore";
 
@@ -104,7 +103,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                         ))
                                         : null}
                                 </SortableContext>
-                                {taskList.length === 0 && <NoTasks status={status.toLowerCase()} />}
+                                {taskList.length === 0 && <NoTaskTable status={status.toLowerCase()} />}
                                 <TableRow className="bg-background">
                                     <TableCell colSpan={6}> </TableCell>
                                 </TableRow>

@@ -1,9 +1,10 @@
 import Rings from "../assets/Rings.png"
+import GoogleLogo from "../assets/GoogleLogo.png"
+import LoginPage from "../assets/LoginPage.png"
 import { NotepadText } from "lucide-react"
+
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import LoginPage from "../assets/LoginPage.png"
-import GoogleLogo from "../assets/GoogleLogo.png"
 import { signInWithGoogle } from "@/lib/googleLogin";
 
 const Login = () => {

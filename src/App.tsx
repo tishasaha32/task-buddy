@@ -1,5 +1,5 @@
 import { Home, Login, Profile } from "@/pages";
-import PrivateRoute from "@/components/app/PrivateRoute";
+import PrivateRoute from "@/components/common/PrivateRoute";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
