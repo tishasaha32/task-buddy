@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { useState } from "react";
-import { db } from "@/firebase/config";
 import ReactQuill from "react-quill-new";
 import { auth } from "@/firebase/config";
 import { useForm } from "react-hook-form";
@@ -15,18 +14,20 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
-import { addDoc, collection } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useTaskStore } from "@/store/taskStore";
 
 interface AddTaskDialogProps {
     openDialog: boolean;
     setOpenDialog: (open: boolean) => void;
 }
 const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
+    const { addTask } = useTaskStore((state) => state);
+
     const { toast } = useToast();
     const [user] = useAuthState(auth);
     const [value, setValue] = useState("");
@@ -63,45 +64,7 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
     });
 
     const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
-        setCreating(true);
-        if (values?.attachments && values?.attachments?.length > 0) {
-            //Store file to cloudinary
-            const data = new FormData();
-            data.append("file", values?.attachments[0]);
-            data.append("upload_preset", "task_buddy");
-            data.append("cloud_name", "dlatzxjdp");
-
-            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
-                method: "post",
-                body: data,
-            })
-            const uploadImage = await res.json();
-
-            //Store task to firestore
-            const payload = { ...values, attachments: uploadImage.url, description: value, userUid: user?.uid };
-            const docRef = await addDoc(collection(db, "tasks"), payload);
-            console.log("Task successfully saved with ID:", docRef.id);
-            if (docRef.id) {
-                toast({ title: "Task Created Successfully👍" });
-            }
-            else {
-                toast({ variant: "destructive", title: "Task Creation Failed👎" });
-            }
-        }
-        else {
-            //Store task to firestore
-            const payload = { ...values, attachments: "", description: value, userUid: user?.uid };
-            const docRef = await addDoc(collection(db, "tasks"), payload);
-            console.log("Task successfully saved with ID:", docRef.id);
-            if (docRef.id) {
-                toast({ title: "Task Created Successfully👍" });
-            }
-            else {
-                toast({ variant: "destructive", title: "Task Creation Failed👎" });
-            }
-        }
-        setCreating(false);
-        setOpenDialog(false);
+        addTask({ values, value, toast, user, setCreating, setOpenDialog });
     };
 
     const handleCategory = (category: string) => {

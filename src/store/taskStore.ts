@@ -1,5 +1,5 @@
 import { db } from "@/firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { create } from "zustand";
 
 // Zustand Store Interface
@@ -8,7 +8,27 @@ interface TaskStore {
   loading: boolean;
   error: string | null;
   getTasks: () => Promise<Task[]>;
-  //   addTask: (task: Omit<Task, "id">) => Promise<void>;
+  addTask: ({
+    values,
+    value,
+    toast,
+    user,
+    setCreating,
+    setOpenDialog,
+  }: any) => Promise<void>;
+  addTaskInTable: ({
+    setCreate,
+    setTaskTitle,
+    setTaskStatus,
+    setTaskCategory,
+    setTaskDate,
+    user,
+    toast,
+    taskTitle,
+    taskStatus,
+    taskCategory,
+    taskDate,
+  }: any) => Promise<void>;
   //   updateTask: (id: string, updatedTask: Partial<Task>) => Promise<void>;
   //   deleteTask: (id: string) => Promise<void>;
 }
@@ -50,5 +70,109 @@ export const useTaskStore = create<TaskStore>((set) => ({
       set({ loading: false, error: error as string });
       return [] as Task[];
     }
+  },
+
+  addTask: async ({
+    values,
+    value,
+    toast,
+    user,
+    setCreating,
+    setOpenDialog,
+  }) => {
+    setCreating(true);
+    if (values?.attachments && values?.attachments?.length > 0) {
+      //Store file to cloudinary
+      const data = new FormData();
+      data.append("file", values?.attachments[0]);
+      data.append("upload_preset", "task_buddy");
+      data.append("cloud_name", "dlatzxjdp");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload",
+        {
+          method: "post",
+          body: data,
+        }
+      );
+      const uploadImage = await res.json();
+
+      //Store task to firestore
+      const payload = {
+        ...values,
+        attachments: uploadImage.url,
+        description: value,
+        userUid: user?.uid,
+      };
+      const docRef = await addDoc(collection(db, "tasks"), payload);
+      if (docRef.id) {
+        toast({ title: "Task Created Successfully👍" });
+        set((state) => ({
+          tasks: [...state.tasks, { id: docRef.id, ...payload }],
+        }));
+      } else {
+        toast({ variant: "destructive", title: "Task Creation Failed👎" });
+      }
+    } else {
+      //Store task to firestore
+      const payload = {
+        ...values,
+        attachments: "",
+        description: value,
+        userUid: user?.uid,
+      };
+      const docRef = await addDoc(collection(db, "tasks"), payload);
+      if (docRef.id) {
+        toast({ title: "Task Created Successfully👍" });
+        set((state) => ({
+          tasks: [...state.tasks, { id: docRef.id, ...payload }],
+        }));
+      } else {
+        toast({ variant: "destructive", title: "Task Creation Failed👎" });
+      }
+    }
+    setCreating(false);
+    setOpenDialog(false);
+  },
+
+  addTaskInTable: async ({
+    setCreate,
+    setTaskTitle,
+    setTaskStatus,
+    setTaskCategory,
+    setTaskDate,
+    user,
+    toast,
+    taskTitle,
+    taskStatus,
+    taskCategory,
+    taskDate,
+  }) => {
+    setCreate(true);
+    const payload = {
+      title: taskTitle,
+      status: taskStatus,
+      category: taskCategory,
+      dueDate: taskDate,
+      attachments: "",
+      description: "",
+      userUid: user?.uid,
+    };
+    const docRef = await addDoc(collection(db, "tasks"), payload);
+    console.log("Task successfully saved with ID:", docRef.id);
+    if (docRef.id) {
+      toast({ title: "Task Created Successfully👍" });
+      //@ts-expect-error todo
+      set((state) => ({
+        tasks: [...state.tasks, { id: docRef.id, ...payload }],
+      }));
+    } else {
+      toast({ variant: "destructive", title: "Task Creation Failed👎" });
+    }
+    setCreate(false);
+    setTaskTitle("");
+    setTaskStatus("");
+    setTaskCategory("");
+    setTaskDate(undefined);
   },
 }));

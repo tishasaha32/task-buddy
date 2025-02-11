@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { auth, db } from "@/firebase/config";
+import { auth } from "@/firebase/config";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { addDoc, collection } from "firebase/firestore";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -13,12 +12,15 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTaskStore } from "@/store/taskStore";
 
 const AddTaskInTable = ({
     setAddTaskClicked,
 }: {
     setAddTaskClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+
+    const { addTaskInTable } = useTaskStore((state) => state);
     const { toast } = useToast();
     const [user] = useAuthState(auth);
     const [taskTitle, setTaskTitle] = useState<string>("");
@@ -28,28 +30,7 @@ const AddTaskInTable = ({
     const [create, setCreate] = useState<boolean>(false);
 
     const handleAddButtonClick = async () => {
-        setCreate(true);
-        const payload = {
-            title: taskTitle,
-            status: taskStatus,
-            category: taskCategory,
-            dueDate: taskDate,
-            attachments: "",
-            description: "",
-            userUid: user?.uid,
-        };
-        const docRef = await addDoc(collection(db, "tasks"), payload);
-        console.log("Task successfully saved with ID:", docRef.id);
-        if (docRef.id) {
-            toast({ title: "Task Created Successfully👍" });
-        } else {
-            toast({ variant: "destructive", title: "Task Creation Failed👎" });
-        }
-        setCreate(false);
-        setTaskTitle("");
-        setTaskStatus("");
-        setTaskCategory("");
-        setTaskDate(undefined);
+        addTaskInTable({ setCreate, setTaskTitle, setTaskStatus, setTaskCategory, setTaskDate, user, toast, taskTitle, taskStatus, taskCategory, taskDate });
     };
 
     return (
