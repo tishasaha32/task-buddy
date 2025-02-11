@@ -95,7 +95,7 @@ const Board = () => {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
+                    <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" value={selectedDate} className="w-[140px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
                 </div>
                 <div className="flex items-center gap-3">
                     <Input placeholder="Search" className="w-[250px] rounded-3xl" startContent={<Search size={20} />} onChange={(e) => handleSearch(e.target.value)} />

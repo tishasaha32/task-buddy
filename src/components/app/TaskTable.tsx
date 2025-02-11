@@ -1,11 +1,17 @@
 import NoTasks from "./NoTasks";
 import TasksLists from "./TasksLists";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, CopyCheck, X } from "lucide-react";
 import AddTaskInTable from "./AddTaskInTable";
+import { Badge } from "@/components/ui/badge";
 import React, { useEffect, useState } from "react";
 import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Popover, PopoverContent } from "../ui/popover";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+import { db } from "@/firebase/config";
+import { doc, writeBatch } from "firebase/firestore";
+
 
 type TaskTableProps = {
     tasks: Task[];
@@ -17,6 +23,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
     const [showInProgress, setShowInProgress] = useState(true);
     const [addTaskClicked, setAddTaskClicked] = useState(false);
     const [tasksData, setTasksData] = useState(tasks as Task[]);
+    const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
     useEffect(() => {
         setTasksData(tasks);
@@ -39,9 +46,27 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
         COMPLETED: tasksData.filter((task) => task.status === "COMPLETED"),
     };
 
+    const updateSelectedTasksStatus = async (newStatus: string, selectedTasks: Task[]) => {
+        if (!selectedTasks.length) return;
+
+        const batch = writeBatch(db);
+        selectedTasks.forEach((task) => {
+            const taskRef = doc(db, "tasks", task.id);
+            batch.update(taskRef, { status: newStatus });
+        });
+
+        try {
+            await batch.commit();
+            console.log("Tasks updated successfully!");
+        } catch (error) {
+            console.error("Error updating tasks:", error);
+        }
+    };
+
+
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
-            <div className="p-4 pt-0 md:p-0">
+            <div className="p-4 pt-0 md:p-0 relative overflow-hidden">
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow>
@@ -75,7 +100,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                 <SortableContext items={taskList.map((t) => t.id)} strategy={verticalListSortingStrategy}>
                                     {(status === "TODO" && showTodo) || (status === "IN_PROGRESS" && showInProgress) || (status === "COMPLETED" && showCompleted)
                                         ? taskList.map((task) => (
-                                            <TasksLists key={task.id} task={task} />
+                                            <TasksLists setSelectedTasks={setSelectedTasks} selectedTasks={selectedTasks} key={task.id} task={task} />
                                         ))
                                         : null}
                                 </SortableContext>
@@ -87,6 +112,32 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                         ))}
                     </TableBody>
                 </Table>
+                {selectedTasks.length > 0 && (
+                    <div className="absolute bottom-0 -translate-x-1/2 left-1/2">
+                        <div className="flex gap-10 items-center rounded-xl bg-black text-white p-2">
+                            <div className="flex items-center gap-2">
+                                <p className="flex items-center gap-2 border border-border p-2 py-1 rounded-3xl text-xs">{selectedTasks.length} tasks selected
+                                    <X size={16} />
+                                </p>
+                                <CopyCheck size={16} />
+                            </div>
+                            <div className="flex gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Badge variant="outline" className="bg-black text-white border border-border px-4 py-1 hover:bg-gray-900 cursor-pointer">Status</Badge>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-32 text-xs bg-black text-white flex flex-col gap-2 font-semibold cursor-pointer">
+                                        <p onClick={() => updateSelectedTasksStatus("TODO", selectedTasks)}>TODO</p>
+                                        <p onClick={() => updateSelectedTasksStatus("IN_PROGRESS", selectedTasks)}>IN PROGRESS</p>
+                                        <p onClick={() => updateSelectedTasksStatus("COMPLETED", selectedTasks)}>COMPLETED</p>
+
+                                    </PopoverContent>
+                                </Popover>
+                                <Badge variant="outline" className="bg-[#3a1f22] text-white border border-red-600 px-4 py-1 hover:bg-gray-900 cursor-pointer">Delete</Badge>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </DndContext>
     );

@@ -6,17 +6,36 @@ import UpdateTaskDialog from "./UpdateTaskDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
 import UpdateTaskDrawerMobile from "./UpdateTaskDrawerMobile";
-import { Ellipsis, CircleCheck, Edit, Trash2, GripVertical } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+    Ellipsis,
+    CircleCheck,
+    Edit,
+    Trash2,
+    GripVertical,
+} from "lucide-react";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/config";
+import { useToast } from "@/hooks/use-toast";
 
 type TasksListProps = {
     task: Task;
+    selectedTasks: Task[];
+    setSelectedTasks: React.Dispatch<React.SetStateAction<Task[]>>
 };
-const TasksLists = ({ task }: TasksListProps) => {
+const TasksLists = ({ task, setSelectedTasks }: TasksListProps) => {
+
+    const { toast } = useToast();
+
     const [disableDrag, setDisableDrag] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openUpdateTaskDialog, setOpenUpdateTaskDialog] = useState(false);
     const [openUpdateTaskDrawerMobile, setOpenUpdateTaskDrawerMobile] = useState(false);
+    const [taskStatus, setTaskStatus] = useState<"TODO" | "IN_PROGRESS" | "COMPLETED">(task?.status);
 
     const { attributes, listeners, setNodeRef, transform, transition } =
         useSortable({
@@ -27,6 +46,29 @@ const TasksLists = ({ task }: TasksListProps) => {
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
+    };
+
+    const handleTaskStatus = (status: "TODO" | "IN_PROGRESS" | "COMPLETED") => {
+        setTaskStatus(status);
+        const taskRef = doc(db, "tasks", task.id);
+        updateDoc(taskRef, {
+            status: status as "TODO" | "IN_PROGRESS" | "COMPLETED",
+        });
+
+        if (taskRef.id) {
+            toast({ title: "Task status updated successfully👍" });
+        }
+        else {
+            toast({ variant: "destructive", title: "Task status update failed👎" });
+        }
+    };
+
+    const handleSelectedTask = () => {
+        setSelectedTasks((prevSelected) =>
+            prevSelected.some((t) => t.id === task.id)
+                ? prevSelected.filter((t) => t.id !== task.id)
+                : [...prevSelected, task]
+        );
     };
 
     return (
@@ -63,7 +105,7 @@ const TasksLists = ({ task }: TasksListProps) => {
                     onMouseEnter={() => setDisableDrag(true)}
                     onMouseLeave={() => setDisableDrag(false)}
                 >
-                    <Checkbox defaultChecked={task.status === "COMPLETED"} />
+                    <Checkbox onClick={() => handleSelectedTask()} defaultChecked={task.status === "COMPLETED"} />
                 </TableCell>
                 <TableCell
                     className={
@@ -88,12 +130,29 @@ const TasksLists = ({ task }: TasksListProps) => {
                 <TableCell className="hidden sm:table-cell">
                     {task?.dueDate && task.dueDate.toDateString()}
                 </TableCell>
-                <TableCell className="hidden sm:table-cell">{task?.status}</TableCell>
+                <TableCell
+                    className="hidden sm:table-cell"
+                    onMouseEnter={() => setDisableDrag(true)}
+                    onMouseLeave={() => setDisableDrag(false)}
+                >
+                    <Popover>
+                        <PopoverTrigger asChild><span className="cursor-pointer bg-[#DDDADD] py-1 px-2 rounded-lg">{taskStatus.split("_").join(" ")}</span></PopoverTrigger>
+                        <PopoverContent className="w-32 text-xs flex flex-col gap-2 font-semibold cursor-pointer">
+                            <p onClick={() => handleTaskStatus("TODO")}>TODO</p>
+                            <p onClick={() => handleTaskStatus("IN_PROGRESS")}>IN PROGRESS</p>
+                            <p onClick={() => handleTaskStatus("COMPLETED")}>COMPLETED</p>
+                        </PopoverContent>
+                    </Popover>
+                </TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.category}</TableCell>
                 <TableCell className="hidden md:table-cell">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />
+                            <Ellipsis
+                                size={16}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
+                            />
                         </PopoverTrigger>
                         <PopoverContent className="w-32 flex flex-col gap-2 p-4 cursor-pointer">
                             <div
@@ -120,7 +179,11 @@ const TasksLists = ({ task }: TasksListProps) => {
                 <TableCell className="md:hidden">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Ellipsis size={16} onMouseEnter={() => setDisableDrag(true)} onMouseLeave={() => setDisableDrag(false)} />
+                            <Ellipsis
+                                size={16}
+                                onMouseEnter={() => setDisableDrag(true)}
+                                onMouseLeave={() => setDisableDrag(false)}
+                            />
                         </PopoverTrigger>
                         <PopoverContent className="w-32 flex flex-col gap-2 p-4 cursor-pointer">
                             <div

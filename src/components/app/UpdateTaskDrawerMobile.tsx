@@ -268,7 +268,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
                             <div className="flex flex-col gap-2 p-2 w-screen">
                                 <div className="text-sm flex justify-between items-center">
                                     <p>You created this task</p>
-                                    {/* <p className="text-gray-500">{format(task?.createdAt, "PPP")}</p> */}
+                                    <p className="text-gray-500">{task?.createdAt && format(task?.createdAt, "PPP")}</p>
                                 </div>
                                 {task?.updatedAt && (
                                     <div className="text-sm flex justify-between items-center">

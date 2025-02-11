@@ -292,7 +292,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     <div className="flex flex-col gap-2 p-2 w-full">
                                         <div className="text-gray-500 text-xs flex justify-between items-center">
                                             <p>You created this task</p>
-                                            {/* <p>{format(task?.createdAt, "PPP")}</p> */}
+                                            <p>{task?.createdAt && format(task?.createdAt, "PPP")}</p>
                                         </div>
                                         {task?.updatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">

@@ -15,6 +15,7 @@ const List = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [openAddTaskDrawerMobile, setOpenAddTaskDrawerMobile] = useState<boolean>(false);
 
     const getTasks = async (): Promise<Task[]> => {
@@ -54,6 +55,7 @@ const List = () => {
     }, []);
 
     const handleDateSelect = (date: Date | undefined) => {
+        setSelectedDate(date);
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));
         setFilteredTasks(tasksFiltered);
     }
@@ -99,7 +101,7 @@ const List = () => {
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-                        <DatePicker endContent={<ChevronDown size={20} />} placeholder="Due Date" className="w-[120px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
+                        <DatePicker endContent={<ChevronDown size={20} />} value={selectedDate} placeholder="Due Date" className="w-[140px] rounded-3xl" onChange={(date) => handleDateSelect(date)} />
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
