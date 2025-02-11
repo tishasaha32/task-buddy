@@ -51,7 +51,7 @@ const List = () => {
             setFilteredTasks(tasksData);
         };
         fetchTasks();
-    }, [tasks]);
+    }, []);
 
     const handleDateSelect = (date: Date | undefined) => {
         const tasksFiltered = tasks.filter((task) => task?.dueDate?.toString().slice(4, 15) === date?.toString().slice(4, 15));

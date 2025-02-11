@@ -212,7 +212,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                                     </p>
                                                     <DatePicker
                                                         endContent={<CalendarDays />}
-                                                        value={task?.dueDate || null}
+                                                        value={field.value ? new Date(field.value) : undefined}
                                                         onChange={field.onChange}
                                                         placeholder="Select a date"
                                                         className="w-[200px]"

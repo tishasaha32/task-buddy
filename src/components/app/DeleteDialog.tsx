@@ -1,10 +1,9 @@
+import { db } from "@/firebase/config";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { deleteDoc, doc } from "firebase/firestore";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 type DeletDialogProps = {
     task: Task;
@@ -12,12 +11,26 @@ type DeletDialogProps = {
     setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const DeleteDialog = ({
-    task,
-    openDialog,
-    setOpenDialog,
-}: DeletDialogProps) => {
-    console.log(task?.title);
+const DeleteDialog = ({ task, openDialog, setOpenDialog }: DeletDialogProps) => {
+
+    const { toast } = useToast();
+    const [deleteTask, setDeleteTask] = useState<boolean>(false);
+
+    const handleDeleteTask = async (taskId: string): Promise<void> => {
+        if (!taskId) return;
+        setDeleteTask(true);
+        try {
+            await deleteDoc(doc(db, "tasks", taskId));
+            toast({ title: "Task deleted successfully" });
+            console.log("Task deleted successfully");
+        } catch (error) {
+            console.error("Error deleting task:", error);
+            toast({ variant: "destructive", title: "Task deletion failed" });
+        }
+        setOpenDialog(false);
+        setDeleteTask(false);
+    };
+
     return (
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogContent>
@@ -30,8 +43,8 @@ const DeleteDialog = ({
                     <Button onClick={() => setOpenDialog(false)} variant="outline">
                         Cancel
                     </Button>
-                    <Button onClick={() => console.log("delete")} variant="destructive">
-                        Delete
+                    <Button onClick={() => handleDeleteTask(task?.id)} variant="destructive">
+                        {deleteTask ? "Deleting..." : "Delete"}
                     </Button>
                 </div>
             </DialogContent>

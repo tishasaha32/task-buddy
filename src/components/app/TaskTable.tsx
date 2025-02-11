@@ -7,7 +7,11 @@ import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-const TaskTable = ({ tasks }: { tasks: Task[] }) => {
+type TaskTableProps = {
+    tasks: Task[];
+}
+
+const TaskTable = ({ tasks }: TaskTableProps) => {
     const [showTodo, setShowTodo] = useState(true);
     const [showCompleted, setShowCompleted] = useState(true);
     const [showInProgress, setShowInProgress] = useState(true);
@@ -34,8 +38,6 @@ const TaskTable = ({ tasks }: { tasks: Task[] }) => {
         IN_PROGRESS: tasksData.filter((task) => task.status === "IN_PROGRESS"),
         COMPLETED: tasksData.filter((task) => task.status === "COMPLETED"),
     };
-
-    // console.log(groupedTasks);
 
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>

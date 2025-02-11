@@ -20,7 +20,7 @@ const TasksLists = ({ task }: TasksListProps) => {
 
     const { attributes, listeners, setNodeRef, transform, transition } =
         useSortable({
-            id: task.uuid,
+            id: task.id,
             disabled: disableDrag,
         });
 
@@ -86,7 +86,7 @@ const TasksLists = ({ task }: TasksListProps) => {
                     {task.title}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
-                    {new Date(task.dueDate).toDateString()}
+                    {task?.dueDate && task.dueDate.toDateString()}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.status}</TableCell>
                 <TableCell className="hidden sm:table-cell">{task?.category}</TableCell>

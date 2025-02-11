@@ -18,12 +18,12 @@ type TaskCardProps = {
 const TaskCard = ({ task }: TaskCardProps) => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [disableDrag, setDisableDrag] = useState(false); // Track drag state
+    const [disableDrag, setDisableDrag] = useState(false);
 
     // Make the task draggable
     const { attributes, listeners, setNodeRef, transform, transition } =
         useSortable({
-            id: task.uuid,
+            id: task.id,
             disabled: disableDrag, // Disable drag dynamically
         });
 
@@ -50,7 +50,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
                     transition,
                 }}
                 className="m-1 min-h-[14vh] flex flex-col justify-between cursor-grab"
-                key={task.uuid}
+                key={task.id}
                 {...attributes}
                 {...(disableDrag ? {} : listeners)}
             >
@@ -100,7 +100,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
                 <CardContent className="flex items-center justify-between w-full gap-2 p-2">
                     <p className="text-xs text-gray-500">{task.category}</p>
                     <p className="text-xs text-gray-500">
-                        {new Date(task.dueDate).toDateString()}
+                        {task.dueDate && task.dueDate.toDateString()}
                     </p>
                 </CardContent>
             </Card>

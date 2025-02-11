@@ -3,7 +3,7 @@ type Task = {
   title: string;
   description: string;
   category: "Work" | "Personal";
-  dueDate: Date;
+  dueDate: Date | undefined;
   status: "TODO" | "IN_PROGRESS" | "COMPLETED";
   attachments: File[] | string;
   createdAt: Date;
