@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { CSS } from "@dnd-kit/utilities";
 import UpdateDialog from "./UpdateTaskDialog";
 import DeleteDialog from "./DeleteDialog";
-import { useSortable } from "@dnd-kit/sortable";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,22 +8,42 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDrag, useDrop } from "react-dnd";
 
 type TaskCardProps = {
     task: Task;
+    index: number;
+    moveTaskWithinColumn: (dragIndex: number, hoverIndex: number, status: string) => void;
+    status: string;
 };
-
-const TaskCard = ({ task }: TaskCardProps) => {
+const ItemType = "task";
+const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [disableDrag, setDisableDrag] = useState(false);
+    const [, drag] = useDrag({
+        type: ItemType,
+        item: { id: task.id, index },
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging(),
+        }),
+    });
 
-    // Make the task draggable
-    const { attributes, listeners, setNodeRef, transform, transition } =
-        useSortable({
-            id: task.id,
-            disabled: disableDrag, // Disable drag dynamically
-        });
+    const [, drop] = useDrop({
+        accept: ItemType,
+        hover: (draggedItem: { id: number; index: number }) => {
+            if (draggedItem.index !== index) {
+                moveTaskWithinColumn(draggedItem.index, index, status);
+                draggedItem.index = index;
+            }
+        },
+    });
+
+    const dragDropRef = (node: HTMLDivElement | null) => {
+        if (node) {
+            drag(drop(node));
+        }
+    };
+
 
     return (
         <>
@@ -44,15 +62,9 @@ const TaskCard = ({ task }: TaskCardProps) => {
                 />
             )}
             <Card
-                ref={setNodeRef}
-                style={{
-                    transform: CSS.Transform.toString(transform),
-                    transition,
-                }}
                 className="m-1 min-h-[14vh] flex flex-col justify-between cursor-grab"
                 key={task.id}
-                {...attributes}
-                {...(disableDrag ? {} : listeners)}
+                ref={dragDropRef}
             >
                 <CardHeader className="p-2">
                     <div className="flex items-center justify-between w-full">
@@ -67,8 +79,6 @@ const TaskCard = ({ task }: TaskCardProps) => {
                             <PopoverTrigger asChild>
                                 <div
                                     className="cursor-pointer"
-                                    onMouseEnter={() => setDisableDrag(true)}
-                                    onMouseLeave={() => setDisableDrag(false)}
                                     onClick={() => console.log("clicked")}
                                 >
                                     <Ellipsis size={16} />
@@ -78,8 +88,6 @@ const TaskCard = ({ task }: TaskCardProps) => {
                                 <div
                                     className="flex items-center gap-2 font-bold"
                                     onClick={() => setOpenEditDialog(true)}
-                                    onMouseEnter={() => setDisableDrag(true)}
-                                    onMouseLeave={() => setDisableDrag(false)}
                                 >
                                     <Edit size={16} />
                                     Edit
@@ -87,8 +95,6 @@ const TaskCard = ({ task }: TaskCardProps) => {
                                 <div
                                     className="flex items-center gap-2 text-destructive font-bold"
                                     onClick={() => setOpenDeleteDialog(true)}
-                                    onMouseEnter={() => setDisableDrag(true)} // Disable drag on hover
-                                    onMouseLeave={() => setDisableDrag(false)}
                                 >
                                     <Trash2 size={16} />
                                     Delete
@@ -100,7 +106,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
                 <CardContent className="flex items-center justify-between w-full gap-2 p-2">
                     <p className="text-xs text-gray-500">{task.category}</p>
                     <p className="text-xs text-gray-500">
-                        {task.dueDate && task.dueDate.toDateString()}
+                        {/* {task.dueDate && task.dueDate.toDateString()} */}
                     </p>
                 </CardContent>
             </Card>
