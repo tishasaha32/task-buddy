@@ -4,13 +4,14 @@ import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
-import { CalendarDays, Loader2 } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
 import { Button } from "@/components/ui/button";
+import { useTaskStore } from "@/store/taskStore";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -18,7 +19,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTaskStore } from "@/store/taskStore";
 
 interface UpdateTaskDialogProps {
     task: Task;

@@ -1,7 +1,7 @@
+import { Link } from "react-router-dom"
 import { auth } from "@/firebase/config"
 import { NotepadText } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { Link } from "react-router-dom"
 
 const TopNavbar = () => {
     const [user] = useAuthState(auth)

@@ -3,7 +3,6 @@ import { useState } from "react";
 import ReactQuill from "react-quill-new";
 import { auth } from "@/firebase/config";
 import { useForm } from "react-hook-form";
-import { CalendarDays, Loader2 } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
 import "react-quill-new/dist/quill.snow.css";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { useTaskStore } from "@/store/taskStore";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -19,7 +20,6 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useTaskStore } from "@/store/taskStore";
 
 interface AddTaskDialogProps {
     openDialog: boolean;

@@ -3,16 +3,12 @@ import { auth } from "@/firebase/config";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTaskStore } from "@/store/taskStore";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { CalendarDays, CornerDownLeft, Loader2 } from "lucide-react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { useTaskStore } from "@/store/taskStore";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const AddTaskInTable = ({
     setAddTaskClicked,

@@ -1,8 +1,7 @@
+import { db } from "@/firebase/config";
 import { useEffect, useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/firebase/config";
-import BoardColumn from "../common/BoardColumn";
-import NoTaskBoard from "../common/NoTaskBoard";
+import { BoardColumn, NoTaskBoard } from "../common";
 
 type TaskBoardProps = {
     tasks: Task[];

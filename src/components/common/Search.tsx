@@ -1,6 +1,6 @@
-import { useTaskStore } from "@/store/taskStore";
-import { Input } from "../ui/input"
 import { SearchIcon } from "lucide-react";
+import { Input } from "@/components/ui/input"
+import { useTaskStore } from "@/store/taskStore";
 
 type SearchProps = {
     setFilteredTasks: React.Dispatch<React.SetStateAction<Task[]>>

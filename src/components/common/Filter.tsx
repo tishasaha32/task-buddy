@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react"
-import { DatePicker } from "../ui/date-picker"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useTaskStore } from "@/store/taskStore";
+import { DatePicker } from "@/components/ui/date-picker"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 type FilterProps = {
     setFilteredTasks: React.Dispatch<React.SetStateAction<Task[]>>

@@ -1,15 +1,13 @@
-import NoTaskTable from "../common/NoTaskTable";
-import TasksLists from "../common/TasksLists";
-import { ChevronUp, CopyCheck, X } from "lucide-react";
-import AddTaskInTable from "../common/AddTaskInTable";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useTaskStore } from "@/store/taskStore";
 import React, { useEffect, useState } from "react";
+import { ChevronUp, CopyCheck, X } from "lucide-react";
+import { AddTaskInTable, TasksLists, NoTaskTable } from "../common";
 import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useTaskStore } from "@/store/taskStore";
-import { useToast } from "@/hooks/use-toast";
 
 type TaskTableProps = {
     tasks: Task[];

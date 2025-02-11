@@ -1,14 +1,10 @@
 import { useState } from "react";
-import UpdateDialog from "../container/UpdateTaskDialog";
 import DeleteDialog from "./DeleteDialog";
+import { useDrag, useDrop } from "react-dnd";
+import { UpdateTaskDialog } from "../container";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { useDrag, useDrop } from "react-dnd";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type TaskCardProps = {
     task: Task;
@@ -48,7 +44,7 @@ const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) 
     return (
         <>
             {openEditDialog && (
-                <UpdateDialog
+                < UpdateTaskDialog
                     task={task}
                     openDialog={openEditDialog}
                     setOpenDialog={setOpenEditDialog}

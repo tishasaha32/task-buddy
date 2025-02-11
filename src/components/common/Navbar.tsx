@@ -1,12 +1,8 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { List, Board } from "../container"
 import { Button } from "@/components/ui/button"
-import List from "../container/List"
-import Board from "../container/Board"
-
 import handleSignOut from "@/lib/googleSignOut"
-
 import { AlignJustify, LogOut, SquareKanban } from "lucide-react"
-
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 const Navbar = () => {
     return (

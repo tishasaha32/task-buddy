@@ -1,25 +1,25 @@
 import { z } from "zod";
 import { useState } from "react";
+import { auth } from "@/firebase/config";
 import ReactQuill from 'react-quill-new';
 import { useForm } from "react-hook-form";
 import { CalendarDays } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
+import { useToast } from "@/hooks/use-toast";
 import 'react-quill-new/dist/quill.snow.css';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
 import { DatePicker } from "@/components/ui/date-picker";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { auth } from "@/firebase/config";
-import { useToast } from "@/hooks/use-toast";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useTaskStore } from "@/store/taskStore";
 
 interface AddTaskDrawerMobileProps {
     openDialog: boolean;

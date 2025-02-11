@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "../ui/button"
-import AddTaskDialog from "../container/AddTaskDialog";
+import { AddTaskDialog } from "../container";
+import { Button } from "@/components//ui/button"
 
 const AddTaskButton = () => {
     const [openAddTaskDialog, setOpenAddTaskDialog] = useState<boolean>(false);

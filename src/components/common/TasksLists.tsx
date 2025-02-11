@@ -1,25 +1,14 @@
 import { useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteDialog from "./DeleteDialog";
+import { useToast } from "@/hooks/use-toast";
 import { useSortable } from "@dnd-kit/sortable";
-import UpdateTaskDialog from "../container/UpdateTaskDialog";
+import { useTaskStore } from "@/store/taskStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableRow, TableCell } from "@/components/ui/table";
-import UpdateTaskDrawerMobile from "../container/UpdateTaskDrawerMobile";
-import {
-    Ellipsis,
-    CircleCheck,
-    Edit,
-    Trash2,
-    GripVertical,
-} from "lucide-react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { useToast } from "@/hooks/use-toast";
-import { useTaskStore } from "@/store/taskStore";
+import { UpdateTaskDialog, UpdateTaskDrawerMobile } from "../container";
+import { Ellipsis, CircleCheck, Edit, Trash2, GripVertical } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type TasksListProps = {
     task: Task;

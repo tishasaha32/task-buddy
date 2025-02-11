@@ -6,10 +6,12 @@ import { CalendarDays } from "lucide-react";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
 import "react-quill-new/dist/quill.snow.css";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
 import { Button } from "@/components/ui/button";
+import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -18,8 +20,6 @@ import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { useToast } from "@/hooks/use-toast";
-import { useTaskStore } from "@/store/taskStore";
 
 interface UpdateTaskDrawerMobileProps {
     task: Task;

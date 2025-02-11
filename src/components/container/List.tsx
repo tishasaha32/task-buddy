@@ -1,11 +1,8 @@
-import TaskTable from "../container/TaskTable";
 import { useEffect, useState } from "react";
-import { Separator } from "@/components/ui/separator";
+import TaskTable from "../container/TaskTable";
 import { useTaskStore } from "@/store/taskStore";
-import Filter from "../common/Filter";
-import Search from "../common/Search";
-import AddTaskButton from "../common/AddTaskButton";
-import AddTaskButtonMobile from "../common/AddTaskButtonMobile";
+import { Separator } from "@/components/ui/separator";
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile } from "../common"
 
 const List = () => {
     const { tasks, getTasks } = useTaskStore((state) => state);

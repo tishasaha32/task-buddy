@@ -1,11 +1,8 @@
 import TaskBoard from "./TaskBoard"
 import { useEffect, useState } from "react";
-import { Separator } from "@/components/ui/separator";
 import { useTaskStore } from "@/store/taskStore";
-import Filter from "../common/Filter";
-import Search from "../common/Search";
-import AddTaskButton from "../common/AddTaskButton";
-import AddTaskButtonMobile from "../common/AddTaskButtonMobile";
+import { Separator } from "@/components/ui/separator";
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile } from "../common"
 
 const Board = () => {
     const { tasks, getTasks } = useTaskStore((state) => state);
