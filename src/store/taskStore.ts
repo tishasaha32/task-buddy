@@ -1,5 +1,11 @@
 import { db } from "@/firebase/config";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from "firebase/firestore";
 import { create } from "zustand";
 
 // Zustand Store Interface
@@ -30,7 +36,12 @@ interface TaskStore {
     taskDate,
   }: any) => Promise<void>;
   //   updateTask: (id: string, updatedTask: Partial<Task>) => Promise<void>;
-  //   deleteTask: (id: string) => Promise<void>;
+  deleteTask: ({
+    taskId,
+    toast,
+    setOpenDialog,
+    setDeleteTaskState,
+  }: any) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -174,5 +185,21 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setTaskStatus("");
     setTaskCategory("");
     setTaskDate(undefined);
+  },
+
+  deleteTask: async ({ taskId, toast, setOpenDialog, setDeleteTaskState }) => {
+    setDeleteTaskState(true);
+    try {
+      await deleteDoc(doc(db, "tasks", taskId));
+      toast({ title: "Task deleted successfully👍" });
+      set((state) => ({
+        tasks: state.tasks.filter((task) => task.id !== taskId),
+      }));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      toast({ variant: "destructive", title: "Task deletion failed👎" });
+    }
+    setOpenDialog(false);
+    setDeleteTaskState(false);
   },
 }));
