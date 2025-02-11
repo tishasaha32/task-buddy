@@ -25,7 +25,7 @@ const BoardColumn = ({ status, tasks, moveTaskWithinColumn, moveTaskBetweenCols 
     return (
         <div
             ref={dropRef}
-            className={`p-4 border ${isOver ? "bg-gray-200" : "bg-gray-100"}`}
+            className={`p-4 border rounded-lg ${isOver ? "bg-gray-200" : "bg-gray-100"}`}
         >
             <h1
                 className={

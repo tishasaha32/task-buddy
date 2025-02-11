@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import BoardColumn from "../common/BoardColumn";
 import NoTaskBoard from "../common/NoTaskBoard";
@@ -18,17 +18,21 @@ const TaskBoard = ({
     category,
 }: TaskBoardProps) => {
     const [tasksData, setTasksData] = useState(tasks);
+    console.log(tasks, "tasks ***")
 
     useEffect(() => {
         setTasksData(tasks);
     }, [tasks]);
 
-    const moveTaskBetweenCols = (id: number | string, newStatus: string) => {
+    const moveTaskBetweenCols = async (id: number | string, newStatus: string) => {
         setTasksData((prev) =>
             prev.map((task): Task =>
                 task.id === id ? { ...task, status: newStatus as "TODO" | "IN_PROGRESS" | "COMPLETED" } : task
             )
         );
+        // updates in firebase
+        const taskRef = doc(db, "tasks", id.toString());
+        await updateDoc(taskRef, { status: newStatus });
     };
 
     const moveTaskWithinColumn = async (
@@ -45,8 +49,11 @@ const TaskBoard = ({
         setTasksData(finalTasks);
         console.log(finalTasks)
         try {
-            const tasksRef = doc(db, "tasks");
-            await setDoc(tasksRef, { tasks: finalTasks }, { merge: true });
+            const batchUpdates = finalTasks.map((task, newIndex) => {
+                const taskRef = doc(db, "tasks", task.id.toString());
+                return updateDoc(taskRef, { index: newIndex });
+            })
+            await Promise.all(batchUpdates);
         }
         catch (error) {
             console.log(error)
