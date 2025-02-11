@@ -1,6 +1,5 @@
 import { z } from "zod";
 // import { format } from "date-fns";
-import { db } from "@/firebase/config";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { CalendarDays } from "lucide-react";
@@ -11,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "../ui/date-picker";
 import { Button } from "@/components/ui/button";
-import { doc, updateDoc } from "firebase/firestore";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from "@/components/ui/file-input";
@@ -21,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
+import { useTaskStore } from "@/store/taskStore";
 
 interface UpdateTaskDrawerMobileProps {
     task: Task;
@@ -32,6 +31,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
     const [update, setUpdate] = useState<boolean>(false);
     const [category, setCategory] = useState<string>(task?.category || "");
 
+    const { updateTask } = useTaskStore((state) => state);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -68,55 +68,7 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
     });
 
     const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
-        setUpdate(true);
-
-        if (values?.attachments && values?.attachments?.length > 0) {
-            //Store file to cloudinary
-            const data = new FormData();
-            data.append("file", values?.attachments[0]);
-            data.append("upload_preset", "task_buddy");
-            data.append("cloud_name", "dlatzxjdp");
-
-            const res = await fetch("https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload", {
-                method: "post",
-                body: data,
-            })
-            const uploadImage = await res.json();
-
-            //Store task to firestore
-            const taskRef = doc(db, "tasks", task.id);
-            const updatedTask = {
-                ...values,
-                attachments: uploadImage.url,
-                description: value,
-                updatedAt: new Date().toISOString(),
-            };
-            await updateDoc(taskRef, updatedTask);
-            if (taskRef.id) {
-                toast({ title: "Task updated successfully👍" });
-            }
-            else {
-                toast({ variant: "destructive", title: "Task update failed👎" })
-            }
-        }
-        else {
-            const taskRef = doc(db, "tasks", task.id);
-            const updatedTask = {
-                ...values,
-                attachments: "",
-                description: value,
-                updatedAt: new Date().toISOString(),
-            };
-            await updateDoc(taskRef, updatedTask);
-            if (taskRef.id) {
-                toast({ title: "Task updated successfully👍" });
-            }
-            else {
-                toast({ variant: "destructive", title: "Task update failed👎" })
-            }
-        }
-        setUpdate(false);
-        setOpenDialog(false);
+        updateTask({ setUpdate, task, values, value, toast, setOpenDialog });
     };
 
     const handleCategory = (category: string) => {

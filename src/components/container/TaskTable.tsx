@@ -8,15 +8,19 @@ import { DndContext, closestCorners, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { db } from "@/firebase/config";
-import { doc, writeBatch } from "firebase/firestore";
-
+import { useTaskStore } from "@/store/taskStore";
+import { useToast } from "@/hooks/use-toast";
 
 type TaskTableProps = {
     tasks: Task[];
 }
 
 const TaskTable = ({ tasks }: TaskTableProps) => {
+
+    const { updateBulkStatus, deleteBulkTasks } = useTaskStore((state) => state);
+
+    const { toast } = useToast();
+
     const [showTodo, setShowTodo] = useState(true);
     const [showCompleted, setShowCompleted] = useState(true);
     const [showInProgress, setShowInProgress] = useState(true);
@@ -47,25 +51,19 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
 
     const updateSelectedTasksStatus = async (newStatus: string, selectedTasks: Task[]) => {
         if (!selectedTasks.length) return;
-
-        const batch = writeBatch(db);
-        selectedTasks.forEach((task) => {
-            const taskRef = doc(db, "tasks", task.id);
-            batch.update(taskRef, { status: newStatus });
-        });
-
-        try {
-            await batch.commit();
-            console.log("Tasks updated successfully!");
-        } catch (error) {
-            console.error("Error updating tasks:", error);
-        }
+        updateBulkStatus({ newStatus, selectedTasks, setSelectedTasks, toast });
     };
+
+    const deleteSelectedTasks = async (selectedTasks: Task[]) => {
+        if (!selectedTasks.length) return;
+        deleteBulkTasks({ selectedTasks, setSelectedTasks, toast });
+    };
+
 
 
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
-            <div className="p-4 pt-0 md:p-0 relative overflow-hidden">
+            <div className="p-4 pt-0 md:p-0 overflow-hidden">
                 <Table className="w-full">
                     <TableHeader>
                         <TableRow>
@@ -112,8 +110,8 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                     </TableBody>
                 </Table>
                 {selectedTasks.length > 0 && (
-                    <div className="absolute bottom-0 -translate-x-1/2 left-1/2">
-                        <div className="flex gap-10 items-center rounded-xl bg-black text-white p-2">
+                    <div className="w-11/12 fixed bottom-4 -translate-x-1/2 left-1/2 md:w-4/12">
+                        <div className="flex gap-6 md:gap-10 items-center rounded-xl bg-black text-white p-2">
                             <div className="flex items-center gap-2">
                                 <p className="flex items-center gap-2 border border-border p-2 py-1 rounded-3xl text-xs">{selectedTasks.length} tasks selected
                                     <X size={16} />
@@ -129,10 +127,9 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                         <p onClick={() => updateSelectedTasksStatus("TODO", selectedTasks)}>TODO</p>
                                         <p onClick={() => updateSelectedTasksStatus("IN_PROGRESS", selectedTasks)}>IN PROGRESS</p>
                                         <p onClick={() => updateSelectedTasksStatus("COMPLETED", selectedTasks)}>COMPLETED</p>
-
                                     </PopoverContent>
                                 </Popover>
-                                <Badge variant="outline" className="bg-[#3a1f22] text-white border border-red-600 px-4 py-1 hover:bg-gray-900 cursor-pointer">Delete</Badge>
+                                <Badge variant="outline" className="bg-[#3a1f22] text-white border border-red-600 px-4 py-1 hover:bg-gray-900 cursor-pointer" onClick={() => deleteSelectedTasks(selectedTasks)}>Delete</Badge>
                             </div>
                         </div>
                     </div>

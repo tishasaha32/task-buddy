@@ -5,6 +5,8 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { create } from "zustand";
 
@@ -35,12 +37,32 @@ interface TaskStore {
     taskCategory,
     taskDate,
   }: any) => Promise<void>;
-  //   updateTask: (id: string, updatedTask: Partial<Task>) => Promise<void>;
+  updateTask: ({
+    setUpdate,
+    task,
+    values,
+    value,
+    toast,
+    setOpenDialog,
+  }: any) => Promise<void>;
+  updateStatus: ({ task, status, toast, setTaskStatus }: any) => Promise<void>;
+  updateBulkStatus: ({
+    newStatus,
+    selectedTasks,
+    setSelectedTasks,
+    toast,
+  }: any) => Promise<void>;
   deleteTask: ({
     taskId,
     toast,
     setOpenDialog,
     setDeleteTaskState,
+  }: any) => Promise<void>;
+
+  deleteBulkTasks: ({
+    selectedTasks,
+    setSelectedTasks,
+    toast,
   }: any) => Promise<void>;
 }
 
@@ -187,6 +209,160 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setTaskDate(undefined);
   },
 
+  updateTask: async ({
+    setUpdate,
+    task,
+    values,
+    value,
+    toast,
+    setOpenDialog,
+  }) => {
+    setUpdate(true);
+    console.log(task?.attachments);
+    if (values?.attachments && values?.attachments?.length > 0) {
+      //Store file to cloudinary
+      const data = new FormData();
+      data.append("file", values?.attachments[0]);
+      data.append("upload_preset", "task_buddy");
+      data.append("cloud_name", "dlatzxjdp");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dlatzxjdp/image/upload",
+        {
+          method: "post",
+          body: data,
+        }
+      );
+      const uploadImage = await res.json();
+
+      //Store task to firestore
+      const taskRef = doc(db, "tasks", task.id);
+      const updatedTask = {
+        ...values,
+        attachments: uploadImage.url,
+        description: value,
+        updatedAt: new Date().toISOString(),
+      };
+      await updateDoc(taskRef, updatedTask);
+      if (taskRef.id) {
+        toast({ title: "Task updated successfully👍" });
+        set((state) => ({
+          tasks: state.tasks.map((t) => {
+            if (t.id === task.id) {
+              return { ...t, ...updatedTask };
+            }
+            return t;
+          }),
+        }));
+      } else {
+        toast({ variant: "destructive", title: "Task update failed👎" });
+      }
+    } else if (
+      task?.attachments &&
+      values?.attachments &&
+      values?.attachments?.length === 0
+    ) {
+      const taskRef = doc(db, "tasks", task.id);
+      const updatedTask = {
+        ...values,
+        attachments: task?.attachments,
+        description: value,
+        updatedAt: new Date().toISOString(),
+      };
+      await updateDoc(taskRef, updatedTask);
+      if (taskRef.id) {
+        toast({ title: "Task updated successfully👍" });
+        set((state) => ({
+          tasks: state.tasks.map((t) => {
+            if (t.id === task.id) {
+              return { ...t, ...updatedTask };
+            }
+            return t;
+          }),
+        }));
+      } else {
+        toast({ variant: "destructive", title: "Task update failed👎" });
+      }
+    } else {
+      const taskRef = doc(db, "tasks", task.id);
+      const updatedTask = {
+        ...values,
+        attachments: "",
+        description: value,
+        updatedAt: new Date().toISOString(),
+      };
+      await updateDoc(taskRef, updatedTask);
+      if (taskRef.id) {
+        toast({ title: "Task updated successfully👍" });
+        set((state) => ({
+          tasks: state.tasks.map((t) => {
+            if (t.id === task.id) {
+              return { ...t, ...updatedTask };
+            }
+            return t;
+          }),
+        }));
+      } else {
+        toast({ variant: "destructive", title: "Task update failed👎" });
+      }
+    }
+    setUpdate(false);
+    setOpenDialog(false);
+  },
+
+  updateStatus: async ({ task, status, toast, setTaskStatus }) => {
+    setTaskStatus(status);
+    const taskRef = doc(db, "tasks", task.id);
+    updateDoc(taskRef, {
+      status: status as "TODO" | "IN_PROGRESS" | "COMPLETED",
+    });
+
+    if (taskRef.id) {
+      toast({ title: "Task status updated successfully👍" });
+      set((state) => ({
+        tasks: state.tasks.map((t) => {
+          if (t.id === task.id) {
+            return { ...t, status: status };
+          }
+          return t;
+        }),
+      }));
+    } else {
+      toast({ variant: "destructive", title: "Task status update failed👎" });
+    }
+  },
+
+  updateBulkStatus: async ({
+    newStatus,
+    selectedTasks,
+    setSelectedTasks,
+    toast,
+  }) => {
+    const batch = writeBatch(db);
+    selectedTasks.forEach((task: Task) => {
+      const taskRef = doc(db, "tasks", task.id);
+      batch.update(taskRef, { status: newStatus });
+    });
+
+    try {
+      await batch.commit();
+      console.log("Tasks updated successfully!");
+      toast({ title: "Tasks updated successfully👍" });
+      set((state) => ({
+        tasks: state.tasks.map((t) => {
+          if (selectedTasks.some((task: Task) => task.id === t.id)) {
+            return { ...t, status: newStatus };
+          }
+          return t;
+        }),
+      }));
+      setSelectedTasks([]);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Task update failed👎" });
+      console.error("Error updating tasks:", error);
+    }
+  },
+
   deleteTask: async ({ taskId, toast, setOpenDialog, setDeleteTaskState }) => {
     setDeleteTaskState(true);
     try {
@@ -201,5 +377,22 @@ export const useTaskStore = create<TaskStore>((set) => ({
     }
     setOpenDialog(false);
     setDeleteTaskState(false);
+  },
+
+  deleteBulkTasks: async ({ selectedTasks, setSelectedTasks, toast }) => {
+    try {
+      const deletePromises = selectedTasks.map((task: Task) =>
+        deleteDoc(doc(db, "tasks", task.id))
+      );
+      await Promise.all(deletePromises);
+      toast({ title: "Tasks deleted successfully👍" });
+      set((state) => ({
+        tasks: state.tasks.filter((task) => !selectedTasks.includes(task)),
+      }));
+    } catch (error) {
+      console.error("Error deleting tasks:", error);
+      toast({ variant: "destructive", title: "Task deletion failed👎" });
+    }
+    setSelectedTasks([]);
   },
 }));

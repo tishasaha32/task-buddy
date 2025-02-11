@@ -18,9 +18,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/firebase/config";
 import { useToast } from "@/hooks/use-toast";
+import { useTaskStore } from "@/store/taskStore";
 
 type TasksListProps = {
     task: Task;
@@ -29,6 +28,7 @@ type TasksListProps = {
 };
 const TasksLists = ({ task, setSelectedTasks }: TasksListProps) => {
 
+    const { updateStatus } = useTaskStore();
     const { toast } = useToast();
 
     const [disableDrag, setDisableDrag] = useState(false);
@@ -49,18 +49,7 @@ const TasksLists = ({ task, setSelectedTasks }: TasksListProps) => {
     };
 
     const handleTaskStatus = (status: "TODO" | "IN_PROGRESS" | "COMPLETED") => {
-        setTaskStatus(status);
-        const taskRef = doc(db, "tasks", task.id);
-        updateDoc(taskRef, {
-            status: status as "TODO" | "IN_PROGRESS" | "COMPLETED",
-        });
-
-        if (taskRef.id) {
-            toast({ title: "Task status updated successfully👍" });
-        }
-        else {
-            toast({ variant: "destructive", title: "Task status update failed👎" });
-        }
+        updateStatus({ task, status, toast, setTaskStatus });
     };
 
     const handleSelectedTask = () => {
@@ -105,7 +94,7 @@ const TasksLists = ({ task, setSelectedTasks }: TasksListProps) => {
                     onMouseEnter={() => setDisableDrag(true)}
                     onMouseLeave={() => setDisableDrag(false)}
                 >
-                    <Checkbox onClick={() => handleSelectedTask()} defaultChecked={task.status === "COMPLETED"} />
+                    <Checkbox onClick={() => handleSelectedTask()} />
                 </TableCell>
                 <TableCell
                     className={
