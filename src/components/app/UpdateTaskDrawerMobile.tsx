@@ -93,10 +93,10 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
             };
             await updateDoc(taskRef, updatedTask);
             if (taskRef.id) {
-                toast({ title: "Task updated successfully" });
+                toast({ title: "Task updated successfully👍" });
             }
             else {
-                toast({ variant: "destructive", title: "Task update failed" })
+                toast({ variant: "destructive", title: "Task update failed👎" })
             }
         }
         else {
@@ -109,10 +109,10 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
             };
             await updateDoc(taskRef, updatedTask);
             if (taskRef.id) {
-                toast({ title: "Task updated successfully" });
+                toast({ title: "Task updated successfully👍" });
             }
             else {
-                toast({ variant: "destructive", title: "Task update failed" })
+                toast({ variant: "destructive", title: "Task update failed👎" })
             }
         }
         setUpdate(false);

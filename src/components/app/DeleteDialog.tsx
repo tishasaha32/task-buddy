@@ -21,11 +21,10 @@ const DeleteDialog = ({ task, openDialog, setOpenDialog }: DeletDialogProps) => 
         setDeleteTask(true);
         try {
             await deleteDoc(doc(db, "tasks", taskId));
-            toast({ title: "Task deleted successfully" });
-            console.log("Task deleted successfully");
+            toast({ title: "Task deleted successfully👍" });
         } catch (error) {
             console.error("Error deleting task:", error);
-            toast({ variant: "destructive", title: "Task deletion failed" });
+            toast({ variant: "destructive", title: "Task deletion failed👎" });
         }
         setOpenDialog(false);
         setDeleteTask(false);

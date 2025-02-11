@@ -1,7 +1,9 @@
 import TaskCard from "./TaskCard";
-import { useDrop } from "react-dnd";
 import { useEffect, useRef, useState } from "react";
 import SearchNotFound from "@/assets/SearchNotFound.png";
+import { useDrop } from "react-dnd";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/firebase/config";
 
 type TaskBoardProps = {
     tasks: Task[];
@@ -28,15 +30,11 @@ const TaskBoard = ({
     const [tasksData, setTasksData] = useState(tasks);
 
     useEffect(() => {
+        console.log(tasks)
         setTasksData(tasks);
     }, [tasks]);
 
-    useEffect(() => {
-        console.log("***", tasksData);
-    }, [tasksData]);
-
     const moveTask = (id: number | string, newStatus: string) => {
-        console.log("***", id, newStatus);
         setTasksData((prev) =>
             prev.map((task): Task =>
                 task.id === id ? { ...task, status: newStatus as "TODO" | "IN_PROGRESS" | "COMPLETED" } : task
@@ -51,16 +49,20 @@ const TaskBoard = ({
     ) => {
         const filteredTasks = tasksData.filter((task) => task.status === status);
         const draggedTask = filteredTasks[dragIndex];
-        console.log("Before :", draggedTask);
         filteredTasks.splice(dragIndex, 1);
-        console.log("middle :", filteredTasks);
         filteredTasks.splice(hoverIndex, 0, draggedTask);
-        console.log("After :", filteredTasks);
+        const finalTasks = [...tasksData.filter((task) => (task.status !== status)), ...filteredTasks]
 
-        setTasksData((prev) => [
-            ...prev.filter((task) => task.status !== status),
-            ...filteredTasks,
-        ]);
+        setTasksData(finalTasks);
+        console.log(finalTasks)
+        try {
+            const tasksRef = doc(db, "tasks");
+            await setDoc(tasksRef, { tasks: finalTasks }, { merge: true });
+        }
+        catch (error) {
+            console.log(error)
+        }
+
     };
 
     // No results

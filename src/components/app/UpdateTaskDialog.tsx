@@ -5,7 +5,7 @@ import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/Task";
 import { useEffect, useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +64,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
 
     const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
         setUpdate(true);
-
+        console.log(task?.attachments)
         if (values?.attachments && values?.attachments?.length > 0) {
             //Store file to cloudinary
             const data = new FormData();
@@ -88,10 +88,26 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
             };
             await updateDoc(taskRef, updatedTask);
             if (taskRef.id) {
-                toast({ title: "Task updated successfully" });
+                toast({ title: "Task updated successfully👍" });
             }
             else {
-                toast({ variant: "destructive", title: "Task update failed" })
+                toast({ variant: "destructive", title: "Task update failed👎" })
+            }
+        }
+        else if (task?.attachments && values?.attachments && values?.attachments?.length === 0) {
+            const taskRef = doc(db, "tasks", task.id);
+            const updatedTask = {
+                ...values,
+                attachments: task?.attachments,
+                description: value,
+                updatedAt: new Date().toISOString(),
+            };
+            await updateDoc(taskRef, updatedTask);
+            if (taskRef.id) {
+                toast({ title: "Task updated successfully👍" });
+            }
+            else {
+                toast({ variant: "destructive", title: "Task update failed👎" })
             }
         }
         else {
@@ -104,10 +120,10 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
             };
             await updateDoc(taskRef, updatedTask);
             if (taskRef.id) {
-                toast({ title: "Task updated successfully" });
+                toast({ title: "Task updated successfully👍" });
             }
             else {
-                toast({ variant: "destructive", title: "Task update failed" })
+                toast({ variant: "destructive", title: "Task update failed👎" })
             }
         }
         setUpdate(false);
@@ -307,7 +323,7 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     }
                                     className="rounded-3xl"
                                 >
-                                    {update ? "Updating..." : "Update"}
+                                    {update ? <><Loader2 className="mr-2 animate-spin" />Updating...</> : "Update"}
                                 </Button>
                             </DialogFooter>
                         </form>

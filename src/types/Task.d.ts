@@ -6,8 +6,8 @@ type Task = {
   dueDate: Date | undefined;
   status: "TODO" | "IN_PROGRESS" | "COMPLETED";
   attachments: File[] | string;
-  createdAt: Date;
+  createdAt: Date | undefined;
   userUid: string;
-  updatedAt?: Date;
-  fileUpdatedAt?: Date;
+  updatedAt?: Date | undefined;
+  fileUpdatedAt?: Date | undefined;
 };
