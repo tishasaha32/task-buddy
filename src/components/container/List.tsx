@@ -1,10 +1,10 @@
+import { auth } from "@/firebase/config";
 import { useEffect, useState } from "react";
 import TaskTable from "../container/TaskTable";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
-import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase/config";
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 
 const List = () => {
     const [user] = useAuthState(auth)

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import DeleteDialog from "./DeleteDialog";
+import { ItemType } from "@/types/dndType";
 import { useDrag, useDrop } from "react-dnd";
 import { UpdateTaskDialog } from "../container";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ItemType } from "@/types/dndType";
 
 type TaskCardProps = {
     task: Task;

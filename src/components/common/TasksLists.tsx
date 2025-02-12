@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import { CSS } from "@dnd-kit/utilities";
 import DeleteDialog from "./DeleteDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -106,7 +107,7 @@ const TasksLists = ({ task, setSelectedTasks }: TasksListProps) => {
                     {task.title}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
-                    {task?.dueDate && task.dueDate.toDateString()}
+                    {task?.dueDate && format(task?.dueDate?.toDateString(), "PPP") === format(new Date(), "PPP") ? "Today" : task?.dueDate?.toDateString()}
                 </TableCell>
                 <TableCell
                     className="hidden sm:table-cell"

@@ -34,7 +34,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
         COMPLETED: 5,
     });
 
-    const loadMoreTasks = (status: string) => {
+    const loadMoreTasks = (status: "TODO" | "IN_PROGRESS" | "COMPLETED") => {
         setTasksToShow((prev) => ({
             ...prev,
             [status]: prev[status] + 5,
@@ -180,12 +180,12 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                         ))
                                         : null}
                                 </SortableContext>
-                                {tasksData.filter((task) => task.status === status).length > tasksToShow[status] && (
+                                {tasksData.filter((task) => task.status === status).length > tasksToShow[status as keyof typeof tasksToShow] && (
                                     <TableRow>
                                         <TableCell colSpan={6} className="text-center">
                                             <Button
                                                 variant="link"
-                                                onClick={() => loadMoreTasks(status)}
+                                                onClick={() => loadMoreTasks(status as "TODO" | "IN_PROGRESS" | "COMPLETED")}
                                                 className="text-[#2683B5] underline"
                                             >
                                                 Load More

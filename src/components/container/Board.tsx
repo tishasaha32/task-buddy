@@ -1,10 +1,10 @@
 import TaskBoard from "./TaskBoard"
+import { auth } from "@/firebase/config";
 import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
-import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase/config";
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 
 const Board = () => {
     const [user] = useAuthState(auth)
