@@ -228,18 +228,18 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
                                     <div className="flex flex-col gap-2 p-2 w-full">
                                         <div className="text-gray-500 text-xs flex justify-between items-center">
                                             <p>You created this task</p>
-                                            {/* <p>{task?.createdAt && format(task?.createdAt, "PPP")}</p> */}
+                                            <p>{task?.createdAt && new Date(task?.createdAt).toDateString()}</p>
                                         </div>
                                         {task?.updatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You updated this task</p>
-                                                {/* <p>{format(task?.updatedAt, "PPP")}</p> */}
+                                                <p>{task?.updatedAt && new Date(task?.updatedAt).toDateString()}</p>
                                             </div>
                                         )}
                                         {task?.fileUpdatedAt && (
                                             <div className="text-gray-500 text-xs flex justify-between items-center">
                                                 <p>You uploaded file</p>
-                                                {/* <p>{format(task?.fileUpdatedAt, "PPP")}</p> */}
+                                                <p>{task?.fileUpdatedAt && new Date(task?.fileUpdatedAt).toDateString()}</p>
                                             </div>
                                         )}
                                     </div>

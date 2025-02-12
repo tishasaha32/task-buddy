@@ -3,6 +3,7 @@ import { auth } from "@/firebase/config";
 import { Input } from "@/components/ui/input";
 import handleSignOut from "@/lib/googleSignOut";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/common/Loading";
 import { ChevronLeft, LogOut } from "lucide-react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -10,7 +11,7 @@ const Profile = () => {
     const [user, loading] = useAuthState(auth);
 
     if (loading) {
-        return <div>Loading...</div>
+        return <Loading />
     }
     return (
         <div className="flex h-screen flex-col gap-5 justify-center items-center overflow-hidden p-8 relative bg-[#FFF9F9]">

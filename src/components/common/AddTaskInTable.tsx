@@ -26,7 +26,7 @@ const AddTaskInTable = ({
     const [create, setCreate] = useState<boolean>(false);
 
     const handleAddButtonClick = async () => {
-        addTaskInTable({ setCreate, setTaskTitle, setTaskStatus, setTaskCategory, setTaskDate, user, toast, taskTitle, taskStatus, taskCategory, taskDate });
+        addTaskInTable({ setCreate, setTaskTitle, setTaskStatus, setTaskCategory, setTaskDate, user: user?.uid, toast, taskTitle, taskStatus, taskCategory, taskDate });
     };
 
     return (

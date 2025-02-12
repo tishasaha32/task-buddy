@@ -2,10 +2,10 @@ import TaskBoard from "./TaskBoard"
 import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
-import { Filter, Search, AddTaskButton, AddTaskButtonMobile } from "../common"
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 
 const Board = () => {
-    const { tasks, getTasks } = useTaskStore((state) => state);
+    const { tasks, getTasks, loading } = useTaskStore((state) => state);
 
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -19,6 +19,10 @@ const Board = () => {
     useEffect(() => {
         setFilteredTasks(tasks);
     }, [tasks]);
+
+    if (loading) {
+        return <Loading />
+    }
 
     return (
         <>

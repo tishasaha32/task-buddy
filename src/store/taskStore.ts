@@ -15,7 +15,9 @@ interface TaskStore {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+
   getTasks: () => Promise<Task[]>;
+
   addTask: ({
     values,
     value,
@@ -23,7 +25,8 @@ interface TaskStore {
     user,
     setCreating,
     setOpenDialog,
-  }: any) => Promise<void>;
+  }: AddTaskProps) => Promise<void>;
+
   addTaskInTable: ({
     setCreate,
     setTaskTitle,
@@ -36,7 +39,8 @@ interface TaskStore {
     taskStatus,
     taskCategory,
     taskDate,
-  }: any) => Promise<void>;
+  }: AddTaskInTableProps) => Promise<void>;
+
   updateTask: ({
     setUpdate,
     task,
@@ -44,26 +48,36 @@ interface TaskStore {
     value,
     toast,
     setOpenDialog,
-  }: any) => Promise<void>;
-  updateStatus: ({ task, status, toast, setTaskStatus }: any) => Promise<void>;
+  }: UpdateTaskProps) => Promise<void>;
+
+  updateStatus: ({
+    task,
+    status,
+    toast,
+    setTaskStatus,
+  }: UpdateStatusProps) => Promise<void>;
+
   updateBulkStatus: ({
     newStatus,
     selectedTasks,
     setSelectedTasks,
     toast,
-  }: any) => Promise<void>;
+    setUpdateBulkStatusState,
+  }: UpdateBulkStatusProps) => Promise<void>;
+
   deleteTask: ({
     taskId,
     toast,
     setOpenDialog,
     setDeleteTaskState,
-  }: any) => Promise<void>;
+  }: DeleteTaskProps) => Promise<void>;
 
   deleteBulkTasks: ({
     selectedTasks,
     setSelectedTasks,
     toast,
-  }: any) => Promise<void>;
+    setDeleteBulkTasksState,
+  }: DeleteBulkTasksProps) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -139,7 +153,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         index: currentTaskCount,
         attachments: uploadImage.url,
         description: value,
-        userUid: user?.uid,
+        userUid: user,
       };
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
@@ -157,7 +171,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         index: currentTaskCount,
         attachments: "",
         description: value,
-        userUid: user?.uid,
+        userUid: user,
       };
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
@@ -198,7 +212,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
       dueDate: taskDate,
       attachments: "",
       description: "",
-      userUid: user?.uid,
+      userUid: user,
     };
     const docRef = await addDoc(collection(db, "tasks"), payload);
     console.log("Task successfully saved with ID:", docRef.id);
@@ -329,9 +343,13 @@ export const useTaskStore = create<TaskStore>((set) => ({
     if (taskRef.id) {
       toast({ title: "Task status updated successfully👍" });
       set((state) => ({
+        ...state,
         tasks: state.tasks.map((t) => {
           if (t.id === task.id) {
-            return { ...t, status: status };
+            return {
+              ...t,
+              status: status as "TODO" | "IN_PROGRESS" | "COMPLETED",
+            };
           }
           return t;
         }),
@@ -345,8 +363,10 @@ export const useTaskStore = create<TaskStore>((set) => ({
     newStatus,
     selectedTasks,
     setSelectedTasks,
+    setUpdateBulkStatusState,
     toast,
   }) => {
+    setUpdateBulkStatusState(true);
     const batch = writeBatch(db);
     selectedTasks.forEach((task: Task) => {
       const taskRef = doc(db, "tasks", task.id);
@@ -358,18 +378,24 @@ export const useTaskStore = create<TaskStore>((set) => ({
       console.log("Tasks updated successfully!");
       toast({ title: "Tasks updated successfully👍" });
       set((state) => ({
+        ...state,
         tasks: state.tasks.map((t) => {
           if (selectedTasks.some((task: Task) => task.id === t.id)) {
-            return { ...t, status: newStatus };
+            return {
+              ...t,
+              status: newStatus as "TODO" | "IN_PROGRESS" | "COMPLETED",
+            };
           }
           return t;
         }),
       }));
+
       setSelectedTasks([]);
     } catch (error) {
       toast({ variant: "destructive", title: "Task update failed👎" });
       console.error("Error updating tasks:", error);
     }
+    setUpdateBulkStatusState(false);
   },
 
   deleteTask: async ({ taskId, toast, setOpenDialog, setDeleteTaskState }) => {
@@ -388,7 +414,13 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setDeleteTaskState(false);
   },
 
-  deleteBulkTasks: async ({ selectedTasks, setSelectedTasks, toast }) => {
+  deleteBulkTasks: async ({
+    selectedTasks,
+    setSelectedTasks,
+    toast,
+    setDeleteBulkTasksState,
+  }) => {
+    setDeleteBulkTasksState(true);
     try {
       const deletePromises = selectedTasks.map((task: Task) =>
         deleteDoc(doc(db, "tasks", task.id))
@@ -403,5 +435,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
       toast({ variant: "destructive", title: "Task deletion failed👎" });
     }
     setSelectedTasks([]);
+    setDeleteBulkTasksState(false);
   },
 }));

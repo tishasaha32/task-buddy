@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import TaskTable from "../container/TaskTable";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
-import { Filter, Search, AddTaskButton, AddTaskButtonMobile } from "../common"
+import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
 
 const List = () => {
-    const { tasks, getTasks } = useTaskStore((state) => state);
+    const { tasks, getTasks, loading } = useTaskStore((state) => state);
 
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -17,6 +17,10 @@ const List = () => {
     useEffect(() => {
         setFilteredTasks(tasks);
     }, [tasks]);
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <>

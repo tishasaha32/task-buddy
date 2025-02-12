@@ -17,7 +17,6 @@ const TaskBoard = ({
     category,
 }: TaskBoardProps) => {
     const [tasksData, setTasksData] = useState(tasks);
-    console.log(tasks, "tasks ***")
 
     useEffect(() => {
         setTasksData(tasks);
@@ -46,17 +45,16 @@ const TaskBoard = ({
         const finalTasks = [...tasksData.filter((task) => (task.status !== status)), ...filteredTasks]
 
         setTasksData(finalTasks);
-        console.log(finalTasks)
-        try {
-            const batchUpdates = finalTasks.map((task, newIndex) => {
-                const taskRef = doc(db, "tasks", task.id.toString());
-                return updateDoc(taskRef, { index: newIndex });
-            })
-            await Promise.all(batchUpdates);
-        }
-        catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     const batchUpdates = finalTasks.map((task, newIndex) => {
+        //         const taskRef = doc(db, "tasks", task.id.toString());
+        //         return updateDoc(taskRef, { index: newIndex });
+        //     })
+        //     await Promise.all(batchUpdates);
+        // }
+        // catch (error) {
+        //     console.log(error)
+        // }
 
     };
 

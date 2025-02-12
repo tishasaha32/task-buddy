@@ -65,7 +65,7 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
 
     // Submit the form data and set it in local storage
     const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
-        addTask({ values, value, toast, user, setCreating, setOpenDialog });
+        addTask({ values, value, toast, user: user?.uid, setCreating, setOpenDialog });
     };
 
     const handleCategory = (category: string) => {

@@ -5,6 +5,7 @@ import { UpdateTaskDialog } from "../container";
 import { Edit, Ellipsis, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ItemType } from "@/types/dndType";
 
 type TaskCardProps = {
     task: Task;
@@ -12,11 +13,10 @@ type TaskCardProps = {
     moveTaskWithinColumn: (dragIndex: number, hoverIndex: number, status: string) => void;
     status: string;
 };
-const ItemType = "task";
 const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [, drag] = useDrag({
+    const [{ isDragging }, drag] = useDrag({
         type: ItemType,
         item: { id: task.id, index },
         collect: (monitor) => ({
@@ -58,8 +58,9 @@ const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) 
                 />
             )}
             <Card
-                className="m-1 min-h-[14vh] flex flex-col justify-between cursor-grab"
+                className={`m-1 min-h-[14vh] flex flex-col justify-between cursor-grab ${isDragging ? "opacity-50" : ""}`}
                 key={task.id}
+                // ref={(node) => drag(drop(node))}
                 ref={dragDropRef}
             >
                 <CardHeader className="p-2">
