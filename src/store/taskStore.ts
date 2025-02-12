@@ -109,7 +109,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
             : new Date(),
           status: data?.status as "TODO" | "IN_PROGRESS" | "COMPLETED",
           attachments: data?.attachments || [],
-          createdAt: data?.createdAt ? new Date(data?.createdAt) : new Date(),
+          createdAt: data.createdAt ? data.createdAt?.toDate() : undefined,
           updatedAt: data?.updatedAt ? new Date(data?.updatedAt) : undefined,
           fileUpdatedAt: data?.fileUpdatedAt
             ? new Date(data?.fileUpdatedAt)
