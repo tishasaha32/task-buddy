@@ -1,5 +1,4 @@
 import { z } from "zod";
-// import { format } from "date-fns";
 import ReactQuill from "react-quill-new";
 import { useForm } from "react-hook-form";
 import { CalendarDays } from "lucide-react";
@@ -39,13 +38,8 @@ const UpdateTaskDrawerMobile = ({ task, openDialog, setOpenDialog }: UpdateTaskD
     }, [task]);
 
     const accept: { [key: string]: string[] } = {
-        "application/msword": [".doc"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
         "image/jpeg": [".jpeg", ".jpg"],
         "image/png": [".png"],
-        "application/pdf": [".pdf"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
     };
 
     const onOpenChange = (open: boolean) => {

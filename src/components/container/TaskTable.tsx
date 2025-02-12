@@ -17,6 +17,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "../ui/button";
 
 type TaskTableProps = {
     tasks: Task[];
@@ -26,6 +27,19 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
     const { updateBulkStatus, deleteBulkTasks } = useTaskStore((state) => state);
 
     const { toast } = useToast();
+
+    const [tasksToShow, setTasksToShow] = useState({
+        TODO: 5,
+        IN_PROGRESS: 5,
+        COMPLETED: 5,
+    });
+
+    const loadMoreTasks = (status: string) => {
+        setTasksToShow((prev) => ({
+            ...prev,
+            [status]: prev[status] + 5,
+        }));
+    };
 
     const [showTodo, setShowTodo] = useState(true);
     const [showCompleted, setShowCompleted] = useState(true);
@@ -52,9 +66,9 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
     };
 
     const groupedTasks = {
-        TODO: tasksData.filter((task) => task.status === "TODO"),
-        IN_PROGRESS: tasksData.filter((task) => task.status === "IN_PROGRESS"),
-        COMPLETED: tasksData.filter((task) => task.status === "COMPLETED"),
+        TODO: tasksData.filter((task) => task.status === "TODO").slice(0, tasksToShow.TODO),
+        IN_PROGRESS: tasksData.filter((task) => task.status === "IN_PROGRESS").slice(0, tasksToShow.IN_PROGRESS),
+        COMPLETED: tasksData.filter((task) => task.status === "COMPLETED").slice(0, tasksToShow.COMPLETED),
     };
 
     const updateSelectedTasksStatus = async (
@@ -110,10 +124,8 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                     className="cursor-pointer"
                                     onClick={() => {
                                         if (status === "TODO") setShowTodo(!showTodo);
-                                        if (status === "IN_PROGRESS")
-                                            setShowInProgress(!showInProgress);
-                                        if (status === "COMPLETED")
-                                            setShowCompleted(!showCompleted);
+                                        if (status === "IN_PROGRESS") setShowInProgress(!showInProgress);
+                                        if (status === "COMPLETED") setShowCompleted(!showCompleted);
                                     }}
                                 >
                                     <TableCell
@@ -168,6 +180,19 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                         ))
                                         : null}
                                 </SortableContext>
+                                {tasksData.filter((task) => task.status === status).length > tasksToShow[status] && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center">
+                                            <Button
+                                                variant="link"
+                                                onClick={() => loadMoreTasks(status)}
+                                                className="text-[#2683B5] underline"
+                                            >
+                                                Load More
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                                 {taskList.length === 0 && (
                                     <NoTaskTable status={status.toLowerCase()} />
                                 )}
@@ -176,6 +201,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
                                 </TableRow>
                             </React.Fragment>
                         ))}
+
                     </TableBody>
                 </Table>
                 {selectedTasks.length > 0 && (

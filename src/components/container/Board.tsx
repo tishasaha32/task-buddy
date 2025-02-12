@@ -33,12 +33,11 @@ const Board = () => {
             <div className="p-4 md:p-0 flex flex-col md:flex-row md:justify-between md:items-center gap-5">
                 <Filter setFilteredTasks={setFilteredTasks} selectedDate={selectedDate} setSelectedDate={setSelectedDate} setCategory={setCategory} />
                 <div className="flex items-center gap-3">
-                    <Search setFilteredTasks={setFilteredTasks} setSearchTerm={setSearchTerm} />
+                    <Search setFilteredTasks={setFilteredTasks} setSearchTerm={setSearchTerm} searchTerm={searchTerm} />
                     <AddTaskButton />
                 </div>
             </div>
             <Separator className="mt-5 mb-1 hidden md:block" />
-
             <TaskBoard tasks={filteredTasks} searchTerm={searchTerm} selectedDate={selectedDate} category={category} />
         </>
     )

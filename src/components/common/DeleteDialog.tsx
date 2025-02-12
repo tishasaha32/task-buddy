@@ -23,13 +23,13 @@ const DeleteDialog = ({ task, openDialog, setOpenDialog }: DeletDialogProps) => 
 
     return (
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogContent>
+            <DialogContent className="w-[350px] md:w-[400px] rounded-md">
                 <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="text-left text-sm md:text-md">
                         Are you sure you want to delete the task?
                     </DialogTitle>
                 </DialogHeader>
-                <div className="flex justify-end gap-2 mt-4">
+                <div className="flex justify-end gap-2 md:mt-4">
                     <Button onClick={() => setOpenDialog(false)} variant="outline">
                         Cancel
                     </Button>

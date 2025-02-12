@@ -8,10 +8,8 @@ import { auth } from "@/firebase/config";
 
 const List = () => {
     const [user] = useAuthState(auth)
-
-    console.log(user)
     const { tasks, getTasks, loading } = useTaskStore((state) => state);
-
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
@@ -33,7 +31,7 @@ const List = () => {
             <div className="p-4 md:p-0 flex flex-col md:flex-row md:justify-between md:items-center gap-5">
                 <Filter setFilteredTasks={setFilteredTasks} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
                 <div className="flex items-center gap-3">
-                    <Search setFilteredTasks={setFilteredTasks} />
+                    <Search setFilteredTasks={setFilteredTasks} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                     <AddTaskButton />
                 </div>
             </div>

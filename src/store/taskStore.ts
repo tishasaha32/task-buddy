@@ -160,6 +160,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         attachments: uploadImage.url,
         description: value,
         userUid: user,
+        createdAt: new Date(),
       };
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
@@ -178,6 +179,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         attachments: "",
         description: value,
         userUid: user,
+        createdAt: new Date(),
       };
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
@@ -219,6 +221,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
       attachments: "",
       description: "",
       userUid: user,
+      createdAt: new Date(),
     };
     const docRef = await addDoc(collection(db, "tasks"), payload);
     if (docRef.id) {
