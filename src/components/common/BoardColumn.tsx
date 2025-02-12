@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import TaskCard from "./TaskCard";
 import { useDrop } from "react-dnd";
+import { motion } from "framer-motion";
 import { ItemType } from "@/types/dndType";
 
 interface ColumnProps {
@@ -9,6 +10,7 @@ interface ColumnProps {
     moveTaskWithinColumn: (dragIndex: number, hoverIndex: number, status: string) => void;
     moveTaskBetweenCols: (id: number | string, newStatus: string) => void;
 }
+
 const BoardColumn = ({ status, tasks, moveTaskWithinColumn, moveTaskBetweenCols }: ColumnProps) => {
     const [{ isOver }, drop] = useDrop({
         accept: ItemType,
@@ -23,9 +25,12 @@ const BoardColumn = ({ status, tasks, moveTaskWithinColumn, moveTaskBetweenCols 
     drop(dropRef);
 
     return (
-        <div
+        <motion.div
             ref={dropRef}
             className={`p-4 border rounded-lg ${isOver ? "bg-gray-200" : "bg-gray-100"}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
         >
             <h1
                 className={
@@ -43,13 +48,12 @@ const BoardColumn = ({ status, tasks, moveTaskWithinColumn, moveTaskBetweenCols 
                 .map((task: Task, index: number) => (
                     <TaskCard
                         task={task}
-                        key={task.id}
                         index={index}
                         moveTaskWithinColumn={moveTaskWithinColumn}
                         status={status}
                     />
                 ))}
-        </div>
+        </motion.div>
     );
 };
 
