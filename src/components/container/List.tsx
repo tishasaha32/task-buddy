@@ -3,15 +3,18 @@ import TaskTable from "../container/TaskTable";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
 import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/config";
 
 const List = () => {
+    const [user] = useAuthState(auth)
     const { tasks, getTasks, loading } = useTaskStore((state) => state);
 
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
     useEffect(() => {
-        getTasks();
+        getTasks({ user });
     }, []);
 
     useEffect(() => {

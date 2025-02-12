@@ -5,7 +5,9 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  query,
   updateDoc,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { create } from "zustand";
@@ -16,7 +18,7 @@ interface TaskStore {
   loading: boolean;
   error: string | null;
 
-  getTasks: () => Promise<Task[]>;
+  getTasks: ({ user: any }) => Promise<Task[]>;
 
   addTask: ({
     values,
@@ -85,11 +87,14 @@ export const useTaskStore = create<TaskStore>((set) => ({
   loading: false,
   error: null,
 
-  getTasks: async (): Promise<Task[]> => {
+  getTasks: async ({ user }): Promise<Task[]> => {
     set({ loading: true, error: null });
     try {
       const tasksCollection = collection(db, "tasks");
-      const tasksSnapshot = await getDocs(tasksCollection);
+      // Query to filter tasks by user ID
+      const q = query(tasksCollection, where("userUid", "==", user.uid));
+      const tasksSnapshot = await getDocs(q);
+
       const tasksList: Task[] = tasksSnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
@@ -128,6 +133,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setCreating,
     setOpenDialog,
   }) => {
+    console.log("Add Task Called");
     setCreating(true);
     const taskStore = useTaskStore.getState();
     const currentTaskCount = taskStore.tasks.length;
@@ -164,6 +170,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
       } else {
         toast({ variant: "destructive", title: "Task Creation Failed👎" });
       }
+      console.log("task Created with doc");
     } else {
       //Store task to firestore
       const payload = {
@@ -173,6 +180,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         description: value,
         userUid: user,
       };
+      console.log(payload);
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
         toast({ title: "Task Created Successfully👍" });
@@ -182,6 +190,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
       } else {
         toast({ variant: "destructive", title: "Task Creation Failed👎" });
       }
+      console.log("task Created without doc");
     }
     setCreating(false);
     setOpenDialog(false);

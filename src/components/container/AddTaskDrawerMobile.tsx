@@ -27,7 +27,6 @@ interface AddTaskDrawerMobileProps {
 }
 const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileProps) => {
     const { addTask } = useTaskStore((state) => state);
-
     const { toast } = useToast();
     const [user] = useAuthState(auth);
     const [value, setValue] = useState('');
@@ -72,7 +71,6 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
         setCategory(category);
         form.setValue("category", category);
     }
-
 
     return (
         <Drawer open={openDialog} onOpenChange={onOpenChange}>
@@ -175,7 +173,7 @@ const AddTaskDrawerMobile = ({ openDialog, setOpenDialog }: AddTaskDrawerMobileP
                                 Cancel
                             </Button>
                             <Button disabled={form?.getValues().title === "" || form?.getValues().status === "" || form?.getValues().category === "" || form?.getValues().dueDate === null}
-                                onClick={() => form.handleSubmit((values) => onSubmit(values))()}
+                                type="submit"
                                 className="rounded-3xl"
                             >
                                 {creating ? "Creating..." : "Create Task"}

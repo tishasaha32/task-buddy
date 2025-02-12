@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/taskStore";
 import { Separator } from "@/components/ui/separator";
 import { Filter, Search, AddTaskButton, AddTaskButtonMobile, Loading } from "../common"
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/config";
 
 const Board = () => {
+    const [user] = useAuthState(auth)
     const { tasks, getTasks, loading } = useTaskStore((state) => state);
 
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -13,7 +16,7 @@ const Board = () => {
     const [category, setCategory] = useState<string>("");
 
     useEffect(() => {
-        getTasks();
+        getTasks({ user });
     }, []);
 
     useEffect(() => {
