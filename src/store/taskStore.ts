@@ -13,6 +13,7 @@ import {
 import { create } from "zustand";
 
 // Zustand Store Interface
+
 interface TaskStore {
   tasks: Task[];
   loading: boolean;
@@ -92,7 +93,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
     try {
       const tasksCollection = collection(db, "tasks");
       // Query to filter tasks by user ID
-      const q = query(tasksCollection, where("userUid", "==", user.uid));
+      const q = query(tasksCollection, where("userUid", "==", user?.uid));
       const tasksSnapshot = await getDocs(q);
 
       const tasksList: Task[] = tasksSnapshot.docs.map((doc) => {
@@ -133,7 +134,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setCreating,
     setOpenDialog,
   }) => {
-    console.log("Add Task Called");
     setCreating(true);
     const taskStore = useTaskStore.getState();
     const currentTaskCount = taskStore.tasks.length;
@@ -170,7 +170,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
       } else {
         toast({ variant: "destructive", title: "Task Creation Failed👎" });
       }
-      console.log("task Created with doc");
     } else {
       //Store task to firestore
       const payload = {
@@ -180,7 +179,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
         description: value,
         userUid: user,
       };
-      console.log(payload);
       const docRef = await addDoc(collection(db, "tasks"), payload);
       if (docRef.id) {
         toast({ title: "Task Created Successfully👍" });
@@ -190,7 +188,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
       } else {
         toast({ variant: "destructive", title: "Task Creation Failed👎" });
       }
-      console.log("task Created without doc");
     }
     setCreating(false);
     setOpenDialog(false);
@@ -224,12 +221,10 @@ export const useTaskStore = create<TaskStore>((set) => ({
       userUid: user,
     };
     const docRef = await addDoc(collection(db, "tasks"), payload);
-    console.log("Task successfully saved with ID:", docRef.id);
     if (docRef.id) {
       toast({ title: "Task Created Successfully👍" });
-      //@ts-expect-error todo
       set((state) => ({
-        tasks: [...state.tasks, { id: docRef.id, ...payload }],
+        tasks: [...state.tasks, { ...payload, id: docRef.id } as Task],
       }));
     } else {
       toast({ variant: "destructive", title: "Task Creation Failed👎" });
@@ -250,7 +245,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setOpenDialog,
   }) => {
     setUpdate(true);
-    console.log(task?.attachments);
     if (values?.attachments && values?.attachments?.length > 0) {
       //Store file to cloudinary
       const data = new FormData();
@@ -384,7 +378,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
 
     try {
       await batch.commit();
-      console.log("Tasks updated successfully!");
       toast({ title: "Tasks updated successfully👍" });
       set((state) => ({
         ...state,

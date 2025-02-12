@@ -76,7 +76,6 @@ const TaskCard = ({ task, index, moveTaskWithinColumn, status }: TaskCardProps) 
                             <PopoverTrigger asChild>
                                 <div
                                     className="cursor-pointer"
-                                    onClick={() => console.log("clicked")}
                                 >
                                     <Ellipsis size={16} />
                                 </div>

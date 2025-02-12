@@ -8,6 +8,8 @@ import { auth } from "@/firebase/config";
 
 const List = () => {
     const [user] = useAuthState(auth)
+
+    console.log(user)
     const { tasks, getTasks, loading } = useTaskStore((state) => state);
 
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);

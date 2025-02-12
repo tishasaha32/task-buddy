@@ -64,7 +64,6 @@ const AddTaskDialog = ({ openDialog, setOpenDialog }: AddTaskDialogProps) => {
     });
 
     const onSubmit = async (values: z.infer<typeof TaskSchema>) => {
-        console.log("onSubmit Desktop Called")
         addTask({ values, value, toast, user: user?.uid, setCreating, setOpenDialog });
     };
 
