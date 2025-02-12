@@ -84,7 +84,7 @@ const TaskTable = ({ tasks }: TaskTableProps) => {
     return (
         <DndContext collisionDetection={closestCorners} onDragEnd={updateTaskOrder}>
             <div className="p-4 pt-0 md:p-0 overflow-hidden">
-                <Table className="w-full">
+                <Table className="w-full overflow-hidden">
                     <TableHeader>
                         <TableRow>
                             <TableHead className="hidden sm:table-cell"></TableHead>
