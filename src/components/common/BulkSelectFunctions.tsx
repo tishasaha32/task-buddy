@@ -12,8 +12,8 @@ type BulkSelectFunctionsProps = {
 
 const BulkSelectFunctions = ({ selectedTasks, updateSelectedTasksStatus, deleteSelectedTasks, updateBulkStatusState, deleteBulkTasksState }: BulkSelectFunctionsProps) => {
     return (
-        <div className="w-11/12 fixed bottom-4 -translate-x-1/2 left-1/2 md:w-5/12">
-            <div className="flex gap-2 md:gap-10 items-center rounded-xl bg-black text-white p-2">
+        <div className="fixed bottom-4 -translate-x-1/2 left-1/2">
+            <div className="w-[90vw] flex justify-center gap-2 md:gap-10 items-center rounded-xl md:w-full bg-black text-white p-2">
                 <div className="flex items-center gap-2">
                     <p className="flex items-center gap-2 border border-border p-2 py-1 rounded-3xl text-xs">
                         {selectedTasks.length} tasks selected
