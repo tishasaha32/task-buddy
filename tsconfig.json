@@ -12,6 +12,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client", "node"],
+    "typeRoots": ["./node_modules/@types"],
+    "noImplicitAny": false,
+    "strict": false
   }
 }

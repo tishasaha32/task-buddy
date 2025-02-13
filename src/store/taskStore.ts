@@ -19,7 +19,7 @@ interface TaskStore {
   loading: boolean;
   error: string | null;
 
-  getTasks: ({ user: any }) => Promise<Task[]>;
+  getTasks: ({ user }) => Promise<Task[]>;
 
   addTask: ({
     values,
