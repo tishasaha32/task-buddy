@@ -43,7 +43,6 @@ const UpdateTaskDialog = ({ task, openDialog, setOpenDialog }: UpdateTaskDialogP
         "image/png": [".png"],
     };
 
-    console.log(task?.createdAt)
     const onOpenChange = (open: boolean) => {
         setOpenDialog(open);
     };

@@ -12,8 +12,7 @@ const Login = () => {
 
     const handleSignIn = async () => {
         try {
-            const user = await signInWithGoogle();
-            console.log("User signed in:", user);
+            await signInWithGoogle();
             navigate("/");
         } catch (error) {
             console.error("Sign-in failed:", error);
