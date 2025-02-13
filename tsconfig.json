@@ -13,9 +13,10 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "firebase"],
     "typeRoots": ["./node_modules/@types"],
     "noImplicitAny": false,
-    "strict": false
+    "strict": false,
+    "skipLibCheck": true,
   }
 }
