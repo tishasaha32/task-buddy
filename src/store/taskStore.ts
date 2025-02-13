@@ -100,7 +100,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
         const data = doc.data();
         return {
           id: doc.id,
-          index: data?.index,
           title: data?.title || "",
           description: data?.description || "",
           category: data?.category as "Work" | "Personal",
@@ -135,8 +134,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
     setOpenDialog,
   }) => {
     setCreating(true);
-    const taskStore = useTaskStore.getState();
-    const currentTaskCount = taskStore.tasks.length;
     if (values?.attachments && values?.attachments?.length > 0) {
       //Store file to cloudinary
       const data = new FormData();
@@ -156,7 +153,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
       //Store task to firestore
       const payload = {
         ...values,
-        index: currentTaskCount,
         attachments: uploadImage.url,
         description: value,
         userUid: user,
@@ -175,7 +171,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
       //Store task to firestore
       const payload = {
         ...values,
-        index: currentTaskCount,
         attachments: "",
         description: value,
         userUid: user,
@@ -208,12 +203,8 @@ export const useTaskStore = create<TaskStore>((set) => ({
     taskCategory,
     taskDate,
   }) => {
-    const taskStore = useTaskStore.getState();
-    const currentTaskCount = taskStore.tasks.length;
-
     setCreate(true);
     const payload = {
-      index: currentTaskCount,
       title: taskTitle,
       status: taskStatus,
       category: taskCategory,

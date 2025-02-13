@@ -1,6 +1,5 @@
 type Task = {
   id: string;
-  index: number;
   title: string;
   description: string;
   category: "Work" | "Personal";
